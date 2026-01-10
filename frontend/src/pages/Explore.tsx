@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Search, MapPin, SlidersHorizontal, Plus } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 // Expanded Mock Data
 const allTrips = [
@@ -124,41 +125,45 @@ export default function Explore() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.05 }}
-                        className="bg-[#02121f] rounded-3xl overflow-hidden border border-white/10 flex flex-col group cursor-pointer hover:border-howl-orange/50 transition-colors relative"
                     >
-                        <div className="h-64 relative overflow-hidden">
-                            <img
-                                src={trip.image}
-                                alt={trip.title}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                            />
-                            <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-white uppercase">
-                                {trip.duration}
-                            </div>
-                        </div>
-                        <div className="flex-1 p-6 flex flex-col gap-4">
-                            <div>
-                                <div className="flex items-center gap-2 text-howl-orange text-xs font-bold uppercase tracking-widest mb-2">
-                                    <MapPin size={14} />
-                                    {trip.location}
+                        <Link
+                            to={`/trip/${trip.id}`}
+                            className="bg-[#02121f] rounded-3xl overflow-hidden border border-white/10 flex flex-col group cursor-pointer hover:border-howl-orange/50 transition-colors relative h-full"
+                        >
+                            <div className="h-64 relative overflow-hidden">
+                                <img
+                                    src={trip.image}
+                                    alt={trip.title}
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                />
+                                <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-white uppercase">
+                                    {trip.duration}
                                 </div>
-                                <h3 className="text-2xl font-heading font-black text-white leading-tight">
-                                    {trip.title}
-                                </h3>
                             </div>
+                            <div className="flex-1 p-6 flex flex-col gap-4">
+                                <div>
+                                    <div className="flex items-center gap-2 text-howl-orange text-xs font-bold uppercase tracking-widest mb-2">
+                                        <MapPin size={14} />
+                                        {trip.location}
+                                    </div>
+                                    <h3 className="text-2xl font-heading font-black text-white leading-tight">
+                                        {trip.title}
+                                    </h3>
+                                </div>
 
-                            <div className="flex flex-wrap gap-2">
-                                {trip.tags.map(tag => (
-                                    <span key={tag} className="text-[10px] font-bold bg-white/5 text-gray-400 px-2 py-1 rounded-md border border-white/5">
-                                        #{tag}
-                                    </span>
-                                ))}
+                                <div className="flex flex-wrap gap-2">
+                                    {trip.tags.map(tag => (
+                                        <span key={tag} className="text-[10px] font-bold bg-white/5 text-gray-400 px-2 py-1 rounded-md border border-white/5">
+                                            #{tag}
+                                        </span>
+                                    ))}
+                                </div>
+
+                                <div className="w-full py-3 mt-auto bg-white/5 group-hover:bg-howl-orange text-white rounded-xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2">
+                                    Join Trip
+                                </div>
                             </div>
-
-                            <button className="w-full py-3 mt-auto bg-white/5 hover:bg-howl-orange text-white rounded-xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 group-hover:bg-howl-orange">
-                                Join Trip
-                            </button>
-                        </div>
+                        </Link>
                     </motion.div>
                 ))}
 

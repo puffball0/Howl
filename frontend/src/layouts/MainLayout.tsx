@@ -1,14 +1,17 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { Home, Calendar, Map, User, PlusCircle, ChevronLeft, ChevronRight } from "lucide-react";
+import { Home, Calendar, Map, User, PlusCircle, ChevronLeft, ChevronRight, Settings, MapPin } from "lucide-react";
 import { cn } from "../lib/utils";
 import { motion } from "framer-motion";
 
 const navItems = [
     { icon: Home, label: "Home", path: "/home" },
-    { icon: Calendar, label: "Calendar", path: "/calendar" },
     { icon: Map, label: "Explore", path: "/explore" },
+    { icon: PlusCircle, label: "Groups", path: "/groups" },
+    { icon: Calendar, label: "Calendar", path: "/calendar" },
+    { icon: MapPin, label: "My Trips", path: "/my-trips" },
     { icon: User, label: "Profile", path: "/profile" },
+    { icon: Settings, label: "Settings", path: "/settings" },
 ];
 
 
@@ -57,12 +60,12 @@ export default function MainLayout() {
                 </nav>
 
                 <div className="mt-8 pt-8 border-t border-white/5 space-y-4">
-                    <button className={cn(
+                    <Link to="/create-trip" className={cn(
                         "w-full h-12 bg-gradient-to-r from-howl-orange to-howl-burnt rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-tighter shadow-lg shadow-howl-orange/20 hover:scale-[1.02] transition-transform whitespace-nowrap"
                     )}>
                         <PlusCircle className="w-5 h-5 min-w-[20px]" />
                         <span>Create</span>
-                    </button>
+                    </Link>
                 </div>
             </motion.aside>
 
@@ -103,9 +106,9 @@ export default function MainLayout() {
                     </Link>
                 ))}
 
-                <button className="w-12 h-12 bg-howl-orange rounded-full flex items-center justify-center shadow-lg shadow-howl-orange/20 -translate-y-4 border-4 border-howl-navy">
+                <Link to="/create-trip" className="w-12 h-12 bg-howl-orange rounded-full flex items-center justify-center shadow-lg shadow-howl-orange/20 -translate-y-4 border-4 border-howl-navy">
                     <PlusCircle className="w-6 h-6 text-black" />
-                </button>
+                </Link>
             </nav>
         </div>
     );

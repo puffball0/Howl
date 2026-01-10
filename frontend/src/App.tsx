@@ -10,6 +10,14 @@ import { cn } from "./lib/utils";
 import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
 import Explore from "./pages/Explore";
+import TripDetails from "./pages/TripDetails";
+import CreateTrip from "./pages/CreateTrip";
+import Groups from "./pages/Groups";
+import Calendar from "./pages/Calendar";
+import MyTrips from "./pages/MyTrips";
+import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
+import GroupChat from "./pages/GroupChat";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -40,10 +48,15 @@ function App() {
           {/* Core App Protected Routes */}
           <Route element={<MainLayout />}>
             <Route path="/home" element={<Home />} />
-            {/* Future routes will go here */}
-            <Route path="/calendar" element={<div className="p-10 font-black">Calendar Under Construction</div>} />
             <Route path="/explore" element={<Explore />} />
-            <Route path="/profile" element={<div className="p-10 font-black">Profile Under Construction</div>} />
+            <Route path="/trip/:id" element={<TripDetails />} />
+            <Route path="/create-trip" element={<CreateTrip />} />
+            <Route path="/groups" element={<Groups />} />
+            <Route path="/group/:id" element={<GroupChat />} />
+            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/my-trips" element={<MyTrips />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
 
           <Route path="/" element={<Navigate to="/login" replace />} />
