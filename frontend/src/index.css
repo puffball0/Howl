@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: 210 20% 98%;
+        --foreground: 220 20% 10%;
+
+        --card: 0 0% 100%;
+        --card-foreground: 220 20% 10%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 220 20% 10%;
+
+        --primary: 27 91% 57%;
+        /* Golden Hearth */
+        --primary-foreground: 0 0% 100%;
+
+        --secondary: 168 35% 14%;
+        /* Winter Cedar */
+        --secondary-foreground: 0 0% 100%;
+
+        --muted: 220 14% 96%;
+        --muted-foreground: 220 14% 46%;
+
+        --accent: 27 91% 57%;
+        --accent-foreground: 0 0% 100%;
+
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 210 20% 98%;
+
+        --border: 220 13% 91%;
+        --input: 220 13% 91%;
+        --ring: 27 91% 57%;
+
+        --radius: 0.75rem;
+    }
+
+    .dark {
+        --background: 210 20% 4%;
+        /* #010b13 Deep Navy/Black */
+        --foreground: 210 20% 98%;
+
+        --card: 210 20% 6%;
+        /* Slightly lighter navy for cards */
+        --card-foreground: 210 20% 98%;
+
+        --popover: 210 20% 6%;
+        --popover-foreground: 210 20% 98%;
+
+        --primary: 27 91% 57%;
+        /* Golden Hearth #f5902e */
+        --primary-foreground: 0 0% 100%;
+
+        --secondary: 98 42% 21%;
+        /* Olive Shadow #2d4e20 */
+        --secondary-foreground: 210 20% 98%;
+
+        --muted: 168 35% 20%;
+        --muted-foreground: 215 20% 65%;
+
+        --accent: 20 70% 41%;
+        /* Amberwood #b55120 */
+        --accent-foreground: 210 20% 98%;
+
+        --destructive: 0 62% 30%;
+        --destructive-foreground: 210 20% 98%;
+
+        --border: 168 35% 20%;
+        --input: 168 35% 20%;
+        --ring: 27 91% 57%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground font-sans antialiased;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        @apply font-heading;
+    }
+}

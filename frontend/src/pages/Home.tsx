@@ -1,0 +1,183 @@
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Search, MapPin, Calendar, Users, Briefcase, ChevronRight, Plus } from "lucide-react";
+
+// Trip data (reusing same data but can be expanded)
+const suggestedTrips = [
+    {
+        id: 1,
+        title: "Tropical Paradise",
+        location: "Bali, Indonesia",
+        duration: "7 Days",
+        image: "/images/trip-beach.png",
+        tags: ["Beach", "Relax"],
+    },
+    {
+        id: 2,
+        title: "Alpine Summit",
+        location: "Swiss Alps",
+        duration: "5 Days",
+        image: "/images/trip-mountain.png",
+        tags: ["Hiking", "Cold"],
+    },
+    {
+        id: 3,
+        title: "Desert Canyon",
+        location: "Utah, USA",
+        duration: "4 Days",
+        image: "/images/trip-desert.png",
+        tags: ["Adventure", "Heat"],
+    },
+    {
+        id: 4,
+        title: "Mystic Forest",
+        location: "Oregon, USA",
+        duration: "3 Days",
+        image: "/images/hero-sunset.png", // Reusing hero for demo
+        tags: ["Nature", "Camping"],
+    },
+];
+
+export default function Home() {
+    const [searchQuery, setSearchQuery] = useState("");
+
+    return (
+        <div className="min-h-full w-full bg-howl-navy flex flex-col">
+
+            {/* HER HERO SECTION */}
+            <div className="relative w-full h-[45vh] lg:h-[50vh] shrink-0 overflow-hidden">
+                <div
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{
+                        backgroundImage: `url('/images/hero-sunset.png')`
+                    }}
+                >
+                    {/* Less transparency as requested - lighter gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-howl-navy" />
+                </div>
+
+                <div className="relative z-10 h-full flex flex-col items-center justify-center px-6 pt-10 text-center">
+                    <motion.h1
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-4xl lg:text-6xl font-heading font-black text-white dropshadow-lg mb-6"
+                    >
+                        WHERE TO NEXT?
+                    </motion.h1>
+
+                    {/* Search Bar - Floating */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="w-full max-w-2xl relative"
+                    >
+                        <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                            <Search className="w-5 h-5 text-gray-800" />
+                        </div>
+                        <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Find your adventure..."
+                            className="w-full h-14 pl-12 pr-4 rounded-full bg-white/90 backdrop-blur-md text-howl-navy placeholder-gray-600 font-bold focus:outline-none focus:ring-4 focus:ring-howl-orange/50 shadow-2xl transition-all"
+                        />
+                    </motion.div>
+                </div>
+            </div>
+
+            {/* HORIZONTAL SCROLL SECTION */}
+            <div className="px-6 -mt-16 relative z-20 space-y-2 pb-10">
+                <div className="flex items-center justify-between mb-4 px-2">
+                    <h2 className="text-2xl font-heading font-black text-white tracking-wider">
+                        SUGGESTED FOR YOU
+                    </h2>
+                    <button className="text-howl-orange text-sm font-bold uppercase tracking-widest hover:text-white transition-colors">
+                        View All
+                    </button>
+                </div>
+
+                {/* Scroll Container */}
+                <div className="overflow-x-auto pb-8 hide-scrollbar">
+                    <div className="flex gap-6 w-max px-2">
+                        {suggestedTrips.map((trip, index) => (
+                            <motion.div
+                                key={trip.id}
+                                initial={{ opacity: 0, x: 50 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                                className="w-[340px] h-[450px] bg-[#02121f] rounded-3xl overflow-hidden border border-white/10 flex flex-col group cursor-pointer hover:border-howl-orange/50 transition-colors relative"
+                            >
+                                <div className="h-3/5 relative overflow-hidden">
+                                    <img
+                                        src={trip.image}
+                                        alt={trip.title}
+                                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                    />
+                                    <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-white uppercase">
+                                        {trip.duration}
+                                    </div>
+                                </div>
+                                <div className="flex-1 p-6 flex flex-col justify-between">
+                                    <div>
+                                        <div className="flex items-center gap-2 text-howl-orange text-xs font-bold uppercase tracking-widest mb-2">
+                                            <MapPin size={14} />
+                                            {trip.location}
+                                        </div>
+                                        <h3 className="text-2xl font-heading font-black text-white leading-tight mb-2">
+                                            {trip.title}
+                                        </h3>
+                                        <div className="flex gap-2">
+                                            {trip.tags.map(tag => (
+                                                <span key={tag} className="text-[10px] font-bold bg-white/5 text-gray-400 px-2 py-1 rounded-md border border-white/5">
+                                                    #{tag}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <button className="w-full py-3 mt-4 bg-white/5 hover:bg-howl-orange text-white rounded-xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 group-hover:bg-howl-orange">
+                                        Join Trip
+                                    </button>
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+            {/* CREATE YOUR OWN TRIP SECTION */}
+            <div className="px-6 mb-20 lg:mb-12">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    className="max-w-4xl mx-auto bg-gradient-to-r from-howl-orange to-howl-burnt rounded-3xl p-8 lg:p-12 text-center relative overflow-hidden shadow-2xl shadow-howl-orange/10"
+                >
+                    <div className="relative z-10 flex flex-col items-center">
+                        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-6 shadow-lg text-howl-orange">
+                            <Plus size={32} strokeWidth={3} />
+                        </div>
+                        <h2 className="text-3xl lg:text-4xl font-heading font-black text-white mb-2 uppercase tracking-tight">
+                            Call Your Pack
+                        </h2>
+                        <p className="text-white/90 font-medium mb-8 max-w-lg">
+                            Can't find the perfect adventure? Create your own trip and let others join your squad.
+                        </p>
+                        <button className="px-8 py-4 bg-howl-navy hover:bg-black text-white rounded-xl font-black uppercase tracking-widest transition-all hover:scale-105 shadow-xl flex items-center gap-2">
+                            Start Planning <ChevronRight size={16} />
+                        </button>
+                    </div>
+                    {/* Abstract Grid Background */}
+                    <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
+                </motion.div>
+            </div>
+
+            {/* SPACER FOR MOBILE NAV */}
+            <div className="h-10 lg:h-0" />
+
+            {/* FOOTER */}
+            <footer className="mt-auto py-8 text-center text-white/30 text-xs font-bold uppercase tracking-widest border-t border-white/5 bg-[#010b13]">
+                <p>&copy; 2026 Howl. All rights reserved.</p>
+            </footer>
+        </div>
+    );
+}
