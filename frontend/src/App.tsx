@@ -9,6 +9,7 @@ import { cn } from "./lib/utils";
 
 import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
+import Explore from "./pages/Explore";
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -41,7 +42,7 @@ function App() {
             <Route path="/home" element={<Home />} />
             {/* Future routes will go here */}
             <Route path="/calendar" element={<div className="p-10 font-black">Calendar Under Construction</div>} />
-            <Route path="/explore" element={<div className="p-10 font-black">Explore Under Construction</div>} />
+            <Route path="/explore" element={<Explore />} />
             <Route path="/profile" element={<div className="p-10 font-black">Profile Under Construction</div>} />
           </Route>
 

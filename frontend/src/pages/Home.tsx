@@ -1,6 +1,7 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Search, MapPin, Calendar, Users, Briefcase, ChevronRight, Plus } from "lucide-react";
+import { Search, MapPin, ChevronRight, Plus } from "lucide-react";
 
 // Trip data (reusing same data but can be expanded)
 const suggestedTrips = [
@@ -92,9 +93,9 @@ export default function Home() {
                     <h2 className="text-2xl font-heading font-black text-white tracking-wider">
                         SUGGESTED FOR YOU
                     </h2>
-                    <button className="text-howl-orange text-sm font-bold uppercase tracking-widest hover:text-white transition-colors">
+                    <Link to="/explore" className="text-howl-orange text-sm font-bold uppercase tracking-widest hover:text-white transition-colors">
                         View All
-                    </button>
+                    </Link>
                 </div>
 
                 {/* Scroll Container */}
