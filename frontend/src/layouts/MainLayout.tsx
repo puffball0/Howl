@@ -95,12 +95,7 @@ export default function MainLayout() {
                     >
                         <div className="relative">
                             <item.icon className="w-6 h-6" />
-                            {location.pathname === item.path && (
-                                <motion.div
-                                    layoutId="mobile-nav-active"
-                                    className="absolute -top-1 -right-1 w-2 h-2 bg-howl-orange rounded-full"
-                                />
-                            )}
+
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-widest">{item.label}</span>
                     </Link>
