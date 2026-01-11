@@ -43,6 +43,8 @@ export default function Groups() {
     const [groups, setGroups] = useState<Group[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    const [searchTerm, setSearchTerm] = useState("");
+
     useEffect(() => {
         const loadGroups = async () => {
             try {
@@ -67,7 +69,10 @@ export default function Groups() {
         );
     }
 
-    const joinedGroups = groups;
+    const joinedGroups = groups.filter(group =>
+        group.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        group.location.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <div className="min-h-full w-full bg-howl-navy p-6 lg:p-10 pb-32">
@@ -83,6 +88,8 @@ export default function Groups() {
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                             type="text"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Find a pack..."
                             className="w-full h-12 pl-10 pr-4 bg-white/5 border border-white/10 rounded-xl text-sm font-bold focus:outline-none focus:border-howl-orange transition-all"
                         />
