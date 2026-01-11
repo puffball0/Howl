@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Calendar, MapPin, ChevronRight, Clock,
@@ -232,9 +233,11 @@ export default function MyTrips() {
                                                             </div>
                                                         )}
 
-                                                        <button className="text-white bg-white/5 hover:bg-howl-orange px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
-                                                            Details
-                                                        </button>
+                                                        <Link to={`/trip/${trip.id}`}>
+                                                            <button className="text-white bg-white/5 hover:bg-howl-orange px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                                                                Details
+                                                            </button>
+                                                        </Link>
                                                     </div>
                                                 </div>
                                             </div>
