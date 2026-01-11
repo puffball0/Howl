@@ -66,7 +66,7 @@ const mockTripJournal = {
 
 export default function MyTrips() {
     const [activeTab, setActiveTab] = useState<"upcoming" | "past" | "pending">("upcoming");
-    const [tripJournal, setTripJournal] = useState<{ upcoming: Trip[]; pending: Trip[]; past: Trip[] }>(mockTripJournal);
+    const [tripJournal, setTripJournal] = useState<{ upcoming: Trip[]; pending: Trip[]; past: Trip[] }>({ upcoming: [], pending: [], past: [] });
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -92,6 +92,14 @@ export default function MyTrips() {
         { id: "pending", label: "Pending", count: tripJournal.pending.length },
         { id: "past", label: "Past", count: tripJournal.past.length },
     ];
+
+    if (isLoading) {
+        return (
+            <div className="min-h-full w-full bg-howl-navy flex items-center justify-center p-20">
+                <Loader2 className="w-8 h-8 text-howl-orange animate-spin" />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-full w-full bg-howl-navy p-6 lg:p-10 pb-32">

@@ -113,7 +113,15 @@ export default function Explore() {
     }, [searchQuery]);
 
     // Filter trips based on selection
-    const allTrips = trips.length > 0 ? trips : mockTrips;
+    const allTrips = trips;
+
+    if (isLoading) {
+        return (
+            <div className="min-h-full w-full bg-howl-navy flex items-center justify-center p-20">
+                <Loader2 className="w-8 h-8 text-howl-orange animate-spin" />
+            </div>
+        );
+    }
     const filteredTrips = selectedFilter === "All"
         ? allTrips
         : allTrips.filter(trip => trip.tags?.some(tag => tag.toLowerCase().includes(selectedFilter.toLowerCase())));
@@ -224,6 +232,6 @@ export default function Explore() {
                     <p className="text-sm text-gray-500 max-w-[200px]">Start a new adventure and invite others to join.</p>
                 </motion.div>
             </div>
-        </div>
+        </div >
     );
 }

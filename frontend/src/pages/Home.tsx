@@ -68,7 +68,15 @@ export default function Home() {
         loadTrips();
     }, []);
 
-    const suggestedTrips = trips.length > 0 ? trips : mockTrips;
+    const suggestedTrips = trips;
+
+    if (isLoading) {
+        return (
+            <div className="min-h-full w-full bg-howl-navy flex items-center justify-center h-screen">
+                <Loader2 className="w-8 h-8 text-howl-orange animate-spin" />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-full w-full bg-howl-navy flex flex-col">
@@ -175,42 +183,43 @@ export default function Home() {
                                 </Link>
                             </motion.div>
                         ))}
+
                     </div>
                 </div>
+                {/* CREATE YOUR OWN TRIP SECTION */}
+                <div className="px-6 mb-20 lg:mb-12">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        className="max-w-4xl mx-auto bg-gradient-to-r from-howl-orange to-howl-burnt rounded-3xl p-8 lg:p-12 text-center relative overflow-hidden shadow-2xl shadow-howl-orange/10"
+                    >
+                        <div className="relative z-10 flex flex-col items-center">
+
+                            <h2 className="text-3xl lg:text-4xl font-heading font-black text-white mb-2 uppercase tracking-tight">
+                                Call Your Pack
+                            </h2>
+                            <p className="text-white/90 font-medium mb-8 max-w-lg">
+                                Can't find the perfect adventure? Create your own trip and let others join your squad.
+                            </p>
+                            <Link to="/create-trip">
+                                <button className="px-8 py-4 bg-howl-navy hover:bg-black text-white rounded-xl font-black uppercase tracking-widest transition-all hover:scale-105 shadow-xl flex items-center gap-2">
+                                    Start Planning <ChevronRight size={16} />
+                                </button>
+                            </Link>
+                        </div>
+                        {/* Abstract Grid Background */}
+                        <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
+                    </motion.div>
+                </div>
+
+                {/* SPACER FOR MOBILE NAV */}
+                <div className="h-10 lg:h-0" />
+
+                {/* FOOTER */}
+                <footer className="mt-auto py-8 text-center text-white/30 text-xs font-bold uppercase tracking-widest border-t border-white/5 bg-[#010b13]">
+                    <p>&copy; 2026 Howl. All rights reserved.</p>
+                </footer>
             </div>
-            {/* CREATE YOUR OWN TRIP SECTION */}
-            <div className="px-6 mb-20 lg:mb-12">
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    className="max-w-4xl mx-auto bg-gradient-to-r from-howl-orange to-howl-burnt rounded-3xl p-8 lg:p-12 text-center relative overflow-hidden shadow-2xl shadow-howl-orange/10"
-                >
-                    <div className="relative z-10 flex flex-col items-center">
-
-                        <h2 className="text-3xl lg:text-4xl font-heading font-black text-white mb-2 uppercase tracking-tight">
-                            Call Your Pack
-                        </h2>
-                        <p className="text-white/90 font-medium mb-8 max-w-lg">
-                            Can't find the perfect adventure? Create your own trip and let others join your squad.
-                        </p>
-                        <Link to="/create-trip">
-                            <button className="px-8 py-4 bg-howl-navy hover:bg-black text-white rounded-xl font-black uppercase tracking-widest transition-all hover:scale-105 shadow-xl flex items-center gap-2">
-                                Start Planning <ChevronRight size={16} />
-                            </button>
-                        </Link>
-                    </div>
-                    {/* Abstract Grid Background */}
-                    <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />
-                </motion.div>
-            </div>
-
-            {/* SPACER FOR MOBILE NAV */}
-            <div className="h-10 lg:h-0" />
-
-            {/* FOOTER */}
-            <footer className="mt-auto py-8 text-center text-white/30 text-xs font-bold uppercase tracking-widest border-t border-white/5 bg-[#010b13]">
-                <p>&copy; 2026 Howl. All rights reserved.</p>
-            </footer>
         </div>
     );
 }
