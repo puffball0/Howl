@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { Home, Calendar, Map, User, PlusCircle, ChevronLeft, ChevronRight, Settings, MapPin, Menu } from "lucide-react";
+import { Home, Calendar, Map, User, PlusCircle, ChevronLeft, ChevronRight, Settings, MapPin, Menu, Plus } from "lucide-react";
 import { cn } from "../lib/utils";
 import { motion } from "framer-motion";
 
@@ -101,8 +101,8 @@ export default function MainLayout() {
                     </Link>
                 ))}
 
-                <Link to="/create-trip" className="w-12 h-12 bg-howl-orange rounded-full flex items-center justify-center shadow-lg shadow-howl-orange/20 -translate-y-4 border-4 border-howl-navy">
-                    <PlusCircle className="w-6 h-6 text-black" />
+                <Link to="/create-trip" className="w-12 h-12 bg-howl-orange rounded-full flex items-center justify-center shadow-lg shadow-howl-orange/20 -translate-y-4 border-4 border-howl-navy hover:scale-110 transition-transform duration-300">
+                    <Plus className="w-6 h-6 text-black" />
                 </Link>
             </nav>
         </div>
