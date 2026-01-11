@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
-import { MapPin, Compass, Camera, Wind, Mountain, Zap } from "lucide-react";
+import { MapPin, Compass, Camera, Wind, Mountain, Zap, Loader2 } from "lucide-react";
 import { cn } from "../lib/utils";
+import { useAuth } from "../contexts/AuthContext";
 
 const personalities = [
     { id: "chill", label: "Chill", icon: Wind },
@@ -18,7 +19,9 @@ const interestsList = [
 
 const Onboarding = () => {
     const navigate = useNavigate();
+    const { completeOnboarding, user } = useAuth();
     const [step, setStep] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         displayName: "",
         ageRange: "",
@@ -240,13 +243,31 @@ const Onboarding = () => {
 
                     <Button
                         variant="adventure"
-                        onClick={step < 3 ? nextStep : () => {
-                            console.log("Onboarding Complete:", formData);
-                            navigate("/home");
+                        onClick={step < 3 ? nextStep : async () => {
+                            setIsLoading(true);
+                            try {
+                                await completeOnboarding({
+                                    display_name: formData.displayName || user?.display_name || 'Adventurer',
+                                    age_range: formData.ageRange,
+                                    location: formData.location,
+                                    personality: formData.personality,
+                                    interests: formData.interests,
+                                });
+                                navigate("/home");
+                            } catch (err) {
+                                console.error('Onboarding failed:', err);
+                            } finally {
+                                setIsLoading(false);
+                            }
                         }}
                         className="rounded-full px-10 h-12 text-sm font-bold bg-howl-orange text-white hover:brightness-110 shadow-lg shadow-howl-orange/20"
+                        disabled={isLoading}
                     >
-                        {step < 3 ? "Next step" : "Begin Adventure"}
+                        {isLoading ? (
+                            <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Saving...</>
+                        ) : (
+                            step < 3 ? "Next step" : "Begin Adventure"
+                        )}
                     </Button>
                 </div>
             </div>

@@ -1,28 +1,43 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Calendar, MapPin, ChevronRight, Clock,
-    CheckCircle2, AlertCircle, BookOpen, Star, MoreVertical
+    CheckCircle2, AlertCircle, BookOpen, Star, MoreVertical, Loader2
 } from "lucide-react";
 import { cn } from "../lib/utils";
+import { userApi, type TripJournal } from "../services/api";
 
-// Mock data for personal trips
-const tripJournal = {
+interface Trip {
+    id: string;
+    title: string;
+    location: string;
+    date?: string;
+    duration?: string;
+    image_url?: string;
+    status?: string;
+    rating?: number;
+    member_count?: number;
+    max_members?: number;
+    tags?: string[];
+}
+
+// Fallback mock data for personal trips
+const mockTripJournal = {
     upcoming: [
         {
             id: "1",
             title: "Tropical Paradise",
             location: "Bali, Indonesia",
-            date: "Sept 12 - 19, 2026",
-            image: "/images/trip-beach.png",
+            duration: "Sept 12 - 19, 2026",
+            image_url: "/images/trip-beach.png",
             status: "Confirmed",
         },
         {
             id: "2",
             title: "Alpine Summit",
             location: "Swiss Alps",
-            date: "Oct 5 - 10, 2026",
-            image: "/images/trip-mountain.png",
+            duration: "Oct 5 - 10, 2026",
+            image_url: "/images/trip-mountain.png",
             status: "Confirmed",
         }
     ],
@@ -31,8 +46,8 @@ const tripJournal = {
             id: "4",
             title: "Mystic Forest",
             location: "Oregon, USA",
-            date: "Nov 3 - 6, 2026",
-            image: "/images/hero-sunset.png",
+            duration: "Nov 3 - 6, 2026",
+            image_url: "/images/hero-sunset.png",
             status: "Waiting Approval",
         }
     ],
@@ -41,8 +56,8 @@ const tripJournal = {
             id: "10",
             title: "Desert Canyon",
             location: "Utah, USA",
-            date: "May 20 - 24, 2026",
-            image: "/images/trip-desert.png",
+            duration: "May 20 - 24, 2026",
+            image_url: "/images/trip-desert.png",
             status: "Completed",
             rating: 5
         }
@@ -51,6 +66,26 @@ const tripJournal = {
 
 export default function MyTrips() {
     const [activeTab, setActiveTab] = useState<"upcoming" | "past" | "pending">("upcoming");
+    const [tripJournal, setTripJournal] = useState<{ upcoming: Trip[]; pending: Trip[]; past: Trip[] }>(mockTripJournal);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const loadTrips = async () => {
+            try {
+                const data = await userApi.getMyTrips();
+                setTripJournal({
+                    upcoming: data.upcoming || [],
+                    pending: data.pending || [],
+                    past: data.past || []
+                });
+            } catch (err) {
+                console.log('Using mock data for my trips');
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadTrips();
+    }, []);
 
     const tabs = [
         { id: "upcoming", label: "Upcoming", count: tripJournal.upcoming.length },
@@ -110,7 +145,7 @@ export default function MyTrips() {
                                         <div className="flex flex-col md:flex-row">
                                             {/* Left: Image */}
                                             <div className="w-full md:w-56 h-48 md:h-auto shrink-0 relative overflow-hidden">
-                                                <img src={trip.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={trip.title} />
+                                                <img src={trip.image_url || "/images/trip-beach.png"} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={trip.title} />
                                                 <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent md:hidden" />
                                             </div>
 

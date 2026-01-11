@@ -3,56 +3,68 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     MapPin, Calendar, Users, Clock, Shield, CheckCircle2,
-    ChevronLeft, MessageSquare, Info, AlertCircle, ArrowRight
+    ChevronLeft, MessageSquare, Info, AlertCircle, ArrowRight, Loader2
 } from "lucide-react";
 import { cn } from "../lib/utils";
+import { tripsApi, type TripDetail } from "../services/api";
 
-// Mock data (in a real app, this would come from an API based on useParams ID)
-const tripsData: Record<string, any> = {
+// Fallback mock data
+const mockTripsData: Record<string, any> = {
     "1": {
         id: "1",
         title: "Tropical Paradise",
         location: "Bali, Indonesia",
         duration: "7 Days",
         dates: "Sept 12 - Sept 19, 2026",
-        groupSize: "8 Max",
-        image: "/images/trip-beach.png",
+        max_members: 8,
+        image_url: "/images/trip-beach.png",
         leader: { name: "Sarah J.", avatar: "https://i.pravatar.cc/150?u=sarah" },
         members: [
-            { id: 1, name: "Alex", avatar: "https://i.pravatar.cc/150?u=1" },
-            { id: 2, name: "Maria", avatar: "https://i.pravatar.cc/150?u=2" },
-            { id: 3, name: "Chen", avatar: "https://i.pravatar.cc/150?u=3" },
+            { id: "1", display_name: "Alex", avatar_url: "https://i.pravatar.cc/150?u=1", role: "member" },
+            { id: "2", display_name: "Maria", avatar_url: "https://i.pravatar.cc/150?u=2", role: "member" },
+            { id: "3", display_name: "Chen", avatar_url: "https://i.pravatar.cc/150?u=3", role: "member" },
         ],
         description: "Experience the ultimate tropical getaway in Bali. We'll be exploring hidden beaches, visiting ancient temples, and enjoying world-class surfing. This trip is designed for those who want a mix of relaxation and soft adventure.",
-        plan: [
-            { day: "1-2", title: "Arrival & Beach Clubbing", detail: "Check-in at Seminyak, sunset drinks at Potato Head." },
-            { day: "3-5", title: "Ubud Spiritual Journey", detail: "Temple visits, rice terrace trekking, and yoga sessions." },
-            { day: "6-7", title: "Nusa Penida Exploration", detail: "Speedboat to Nusa Penida for the iconic Kelingking Beach view." },
+        plans: [
+            { id: "1", day_range: "1-2", title: "Arrival & Beach Clubbing", detail: "Check-in at Seminyak, sunset drinks at Potato Head.", order: 0 },
+            { id: "2", day_range: "3-5", title: "Ubud Spiritual Journey", detail: "Temple visits, rice terrace trekking, and yoga sessions.", order: 1 },
+            { id: "3", day_range: "6-7", title: "Nusa Penida Exploration", detail: "Speedboat to Nusa Penida for the iconic Kelingking Beach view.", order: 2 },
         ],
         restrictions: {
             ageLimit: "21-35",
             gender: "All Genders",
             vibe: "Nomadic / Chill",
-            joinType: "request" // 'instant' or 'request'
-        }
+            joinType: "request"
+        },
+        member_count: 3,
+        is_member: false,
+        is_leader: false,
+        tags: ["Beach", "Relax"],
+        created_at: new Date().toISOString()
     },
-    // Fallback for others
     "all": {
+        id: "0",
         title: "Alpine Summit",
         location: "Swiss Alps",
         duration: "5 Days",
         dates: "Oct 5 - Oct 10, 2026",
-        groupSize: "6 Max",
-        image: "/images/trip-mountain.png",
+        max_members: 6,
+        image_url: "/images/trip-mountain.png",
         leader: { name: "Mark Wilson", avatar: "https://i.pravatar.cc/150?u=mark" },
         members: [],
         description: "A challenging but rewarding trek through the heart of the Swiss Alps. Expect stunning vistas and cozy mountain huts.",
+        plans: [],
         restrictions: {
             ageLimit: "18+",
             gender: "All Genders",
             vibe: "Active / Intense",
             joinType: "instant"
-        }
+        },
+        member_count: 0,
+        is_member: false,
+        is_leader: false,
+        tags: ["Mountain", "Hiking"],
+        created_at: new Date().toISOString()
     }
 };
 
@@ -62,21 +74,50 @@ export default function TripDetails() {
     const [trip, setTrip] = useState<any>(null);
     const [joinState, setJoinState] = useState<"idle" | "joining" | "joined" | "requested">("idle");
     const [showRestrictionWarning, setShowRestrictionWarning] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        // Mock fetching data
-        const data = tripsData[id as string] || tripsData["all"];
-        setTrip(data);
+        const loadTrip = async () => {
+            if (!id) return;
+            try {
+                const data = await tripsApi.getById(id);
+                setTrip(data);
+                if (data.is_member) {
+                    setJoinState("joined");
+                }
+            } catch (err) {
+                console.log('Using mock data for trip');
+                const data = mockTripsData[id] || mockTripsData["all"];
+                setTrip(data);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadTrip();
     }, [id]);
 
-    if (!trip) return <div className="p-20 text-white font-black">LOADING...</div>;
+    if (!trip) return (
+        <div className="min-h-screen bg-howl-navy flex items-center justify-center">
+            <Loader2 className="w-8 h-8 text-howl-orange animate-spin" />
+        </div>
+    );
 
-    const handleJoin = () => {
-        if (trip.restrictions.joinType === "request") {
-            setJoinState("requested");
-        } else {
-            setJoinState("joining");
-            setTimeout(() => setJoinState("joined"), 1500);
+    const handleJoin = async () => {
+        setJoinState("joining");
+        try {
+            const result = await tripsApi.join(trip.id);
+            if (result.status === "joined") {
+                setJoinState("joined");
+            } else if (result.status === "requested") {
+                setJoinState("requested");
+            }
+        } catch (err) {
+            // Fallback to mock behavior
+            if (trip.restrictions?.joinType === "request") {
+                setJoinState("requested");
+            } else {
+                setTimeout(() => setJoinState("joined"), 1000);
+            }
         }
     };
 
@@ -94,14 +135,25 @@ export default function TripDetails() {
                     <ChevronLeft size={24} />
                 </button>
 
-                <div className="absolute bottom-8 left-8 right-8 z-20">
-                    <div className="flex items-center gap-2 text-howl-orange text-sm font-black uppercase tracking-widest mb-2 drop-shadow-md">
-                        <MapPin size={16} />
-                        {trip.location}
+                <div className="absolute bottom-8 left-8 right-8 z-20 flex items-end justify-between">
+                    <div>
+                        <div className="flex items-center gap-2 text-howl-orange text-sm font-black uppercase tracking-widest mb-2 drop-shadow-md">
+                            <MapPin size={16} />
+                            {trip.location}
+                        </div>
+                        <h1 className="text-4xl lg:text-6xl font-heading font-black text-white dropshadow-2xl leading-tight">
+                            {trip.title.toUpperCase()}
+                        </h1>
                     </div>
-                    <h1 className="text-4xl lg:text-6xl font-heading font-black text-white dropshadow-2xl leading-tight">
-                        {trip.title.toUpperCase()}
-                    </h1>
+                    {trip.is_leader && (
+                        <button
+                            onClick={() => navigate(`/trip/${trip.id}/edit`)}
+                            className="h-12 px-6 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 rounded-xl font-bold uppercase tracking-widest text-xs flex items-center gap-2 transition-all hover:scale-105"
+                        >
+                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                            Edit Trip
+                        </button>
+                    )}
                 </div>
             </div>
 

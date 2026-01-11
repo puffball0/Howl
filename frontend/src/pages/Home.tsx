@@ -1,46 +1,74 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Search, MapPin, ChevronRight, Plus } from "lucide-react";
+import { Search, MapPin, ChevronRight, Plus, Loader2 } from "lucide-react";
+import { tripsApi, type TripListItem } from "../services/api";
 
-// Trip data (reusing same data but can be expanded)
-const suggestedTrips = [
+// Fallback mock data
+const mockTrips = [
     {
-        id: 1,
+        id: "1",
         title: "Tropical Paradise",
         location: "Bali, Indonesia",
         duration: "7 Days",
-        image: "/images/trip-beach.png",
+        image_url: "/images/trip-beach.png",
         tags: ["Beach", "Relax"],
+        member_count: 5,
+        max_members: 8
     },
     {
-        id: 2,
+        id: "2",
         title: "Alpine Summit",
         location: "Swiss Alps",
         duration: "5 Days",
-        image: "/images/trip-mountain.png",
+        image_url: "/images/trip-mountain.png",
         tags: ["Hiking", "Cold"],
+        member_count: 3,
+        max_members: 6
     },
     {
-        id: 3,
+        id: "3",
         title: "Desert Canyon",
         location: "Utah, USA",
         duration: "4 Days",
-        image: "/images/trip-desert.png",
+        image_url: "/images/trip-desert.png",
         tags: ["Adventure", "Heat"],
+        member_count: 4,
+        max_members: 8
     },
     {
-        id: 4,
+        id: "4",
         title: "Mystic Forest",
         location: "Oregon, USA",
         duration: "3 Days",
-        image: "/images/hero-sunset.png", // Reusing hero for demo
+        image_url: "/images/hero-sunset.png",
         tags: ["Nature", "Camping"],
+        member_count: 2,
+        max_members: 5
     },
 ];
 
 export default function Home() {
     const [searchQuery, setSearchQuery] = useState("");
+    const [trips, setTrips] = useState<TripListItem[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const loadTrips = async () => {
+            try {
+                const data = await tripsApi.list({ limit: 10 });
+                setTrips(data);
+            } catch (err) {
+                console.log('Using mock data for trips');
+                setTrips(mockTrips as TripListItem[]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadTrips();
+    }, []);
+
+    const suggestedTrips = trips.length > 0 ? trips : mockTrips;
 
     return (
         <div className="min-h-full w-full bg-howl-navy flex flex-col">
@@ -114,7 +142,7 @@ export default function Home() {
                                 >
                                     <div className="h-3/5 relative overflow-hidden">
                                         <img
-                                            src={trip.image}
+                                            src={trip.image_url || "/images/trip-beach.png"}
                                             alt={trip.title}
                                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                         />
@@ -167,9 +195,11 @@ export default function Home() {
                         <p className="text-white/90 font-medium mb-8 max-w-lg">
                             Can't find the perfect adventure? Create your own trip and let others join your squad.
                         </p>
-                        <button className="px-8 py-4 bg-howl-navy hover:bg-black text-white rounded-xl font-black uppercase tracking-widest transition-all hover:scale-105 shadow-xl flex items-center gap-2">
-                            Start Planning <ChevronRight size={16} />
-                        </button>
+                        <Link to="/create-trip">
+                            <button className="px-8 py-4 bg-howl-navy hover:bg-black text-white rounded-xl font-black uppercase tracking-widest transition-all hover:scale-105 shadow-xl flex items-center gap-2">
+                                Start Planning <ChevronRight size={16} />
+                            </button>
+                        </Link>
                     </div>
                     {/* Abstract Grid Background */}
                     <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent" />

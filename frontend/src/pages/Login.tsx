@@ -1,15 +1,31 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
-import { ArrowRight, Mail, Lock } from "lucide-react";
+import { ArrowRight, Mail, Lock, Loader2 } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
 
 const Login = () => {
     const navigate = useNavigate();
+    const { login, googleLogin } = useAuth();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState("");
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Simulate login
-        navigate("/onboarding");
+        setError("");
+        setIsLoading(true);
+
+        try {
+            await login(email, password);
+            navigate("/onboarding");
+        } catch (err: any) {
+            setError(err.message || "Login failed. Please try again.");
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -19,17 +35,39 @@ const Login = () => {
                 <p className="text-muted-foreground">Enter your details to sign in to your account.</p>
             </div>
 
+            {error && (
+                <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm font-medium">
+                    {error}
+                </div>
+            )}
+
             <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
                     <div className="relative">
                         <Mail className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                        <Input type="email" placeholder="Email Address" className="pl-10 bg-black/20 border-white/10 text-white placeholder:text-white/40 focus:border-howl-orange" required />
+                        <Input
+                            type="email"
+                            placeholder="Email Address"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="pl-10 bg-black/20 border-white/10 text-white placeholder:text-white/40 focus:border-howl-orange"
+                            required
+                            disabled={isLoading}
+                        />
                     </div>
                 </div>
                 <div className="space-y-2">
                     <div className="relative">
                         <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-                        <Input type="password" placeholder="Password" className="pl-10 bg-black/20 border-white/10 text-white placeholder:text-white/40 focus:border-howl-orange" required />
+                        <Input
+                            type="password"
+                            placeholder="Password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="pl-10 bg-black/20 border-white/10 text-white placeholder:text-white/40 focus:border-howl-orange"
+                            required
+                            disabled={isLoading}
+                        />
                     </div>
                 </div>
 
@@ -45,8 +83,18 @@ const Login = () => {
                     type="submit"
                     variant="adventure"
                     className="w-full text-lg py-6"
+                    disabled={isLoading}
                 >
-                    Login <ArrowRight className="ml-2 h-5 w-5" />
+                    {isLoading ? (
+                        <>
+                            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                            Signing in...
+                        </>
+                    ) : (
+                        <>
+                            Login <ArrowRight className="ml-2 h-5 w-5" />
+                        </>
+                    )}
                 </Button>
             </form>
 
@@ -62,10 +110,20 @@ const Login = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-                <Button variant="outline" className="bg-black/20 border-white/10 text-white hover:bg-white/10 hover:text-white">
+                <Button
+                    variant="outline"
+                    className="bg-black/20 border-white/10 text-white hover:bg-white/10 hover:text-white"
+                    onClick={googleLogin}
+                    type="button"
+                >
                     Google
                 </Button>
-                <Button variant="outline" className="bg-black/20 border-white/10 text-white hover:bg-white/10 hover:text-white">
+                <Button
+                    variant="outline"
+                    className="bg-black/20 border-white/10 text-white hover:bg-white/10 hover:text-white"
+                    type="button"
+                    disabled
+                >
                     Apple
                 </Button>
             </div>
@@ -81,3 +139,4 @@ const Login = () => {
 };
 
 export default Login;
+

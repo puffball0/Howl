@@ -1,19 +1,20 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     ChevronLeft, ChevronRight, MapPin,
-    Calendar as CalendarIcon, Users, Info
+    Calendar as CalendarIcon, Users, Info, Loader2
 } from "lucide-react";
 import { cn } from "../lib/utils";
+import { calendarApi, type CalendarTrip } from "../services/api";
 
-// Mock data for calendar
-const tripEvents = [
+// Fallback mock data for calendar
+const mockTripEvents = [
     {
         id: "1",
         title: "Tropical Paradise",
         location: "Bali, Indonesia",
         dates: [12, 13, 14, 15, 16, 17, 18, 19],
-        month: 8, // Sept (0-indexed 8)
+        month: 8, // Sept (0-indexed)
         color: "bg-howl-orange",
         vibe: "Nomadic / Chill"
     },
@@ -31,6 +32,23 @@ const tripEvents = [
 export default function Calendar() {
     const [currentMonth, setCurrentMonth] = useState(8); // September 2026
     const [hoveredTrip, setHoveredTrip] = useState<any>(null);
+    const [tripEvents, setTripEvents] = useState<CalendarTrip[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const loadEvents = async () => {
+            try {
+                const data = await calendarApi.getTripsByMonth(currentMonth + 1, 2026);
+                setTripEvents(data);
+            } catch (err) {
+                console.log('Using mock data for calendar');
+                setTripEvents(mockTripEvents as CalendarTrip[]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadEvents();
+    }, [currentMonth]);
 
     const daysInMonth = (month: number) => new Date(2026, month + 1, 0).getDate();
     const firstDayOfMonth = (month: number) => new Date(2026, month, 1).getDay();
@@ -129,7 +147,7 @@ export default function Calendar() {
                                     </span>
                                 )}
 
-                                {date.isTrip && (
+                                {date.trip && (
                                     <motion.div
                                         layoutId={date.trip.id}
                                         className={cn(

@@ -1,46 +1,120 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
     User, Mail, MapPin, Camera, Briefcase,
-    Globe, Heart, Shield, Save, ChevronRight
+    Globe, Heart, Shield, Save, ChevronRight, Loader2
 } from "lucide-react";
 import { cn } from "../lib/utils";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Profile() {
+    const { user, updateProfile, uploadAvatar } = useAuth();
+    const avatarInputRef = useRef<HTMLInputElement>(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
     const [userData, setUserData] = useState({
-        name: "Warda",
-        email: "warda@howl.com",
-        location: "Berlin, Germany",
-        bio: "Adventure seeker and mountain lover. Looking for my next pack to explore the Swiss Alps!",
-        personality: "Adventurous",
-        interests: ["Hiking", "Photography", "Camping", "Sustainable Travel"]
+        name: "",
+        email: "",
+        location: "", // Remove manual avatar_url editing state as it's handled via upload
+        bio: "",
+        personality: "",
+        interests: [] as string[]
     });
 
-    const handleSave = () => {
+    // Load user data from auth context
+    useEffect(() => {
+        if (user) {
+            setUserData({
+                name: user.display_name || "",
+                email: user.email,
+                location: user.location || "",
+                bio: user.bio || "",
+                personality: user.personality || "",
+                interests: user.interests || []
+            });
+        }
+    }, [user]);
+
+    const handleCameraClick = () => {
+        avatarInputRef.current?.click();
+    };
+
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file) return;
+
+        setIsUploading(true);
+        try {
+            await uploadAvatar(file);
+        } catch (err) {
+            console.error('Failed to upload avatar:', err);
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleSave = async () => {
         setIsSaving(true);
-        setTimeout(() => setIsSaving(false), 1500);
+        try {
+            await updateProfile({
+                display_name: userData.name,
+                location: userData.location,
+                bio: userData.bio,
+                personality: userData.personality,
+                interests: userData.interests
+            });
+        } catch (err) {
+            console.error('Failed to save profile:', err);
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (
         <div className="min-h-full w-full bg-howl-navy p-6 lg:p-10 pb-32">
             <div className="max-w-3xl mx-auto">
 
+                {/* Hidden File Input */}
+                <input
+                    type="file"
+                    ref={avatarInputRef}
+                    onChange={handleFileChange}
+                    className="hidden"
+                    accept="image/*"
+                />
+
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
                     <div className="flex items-center gap-6">
                         <div className="relative group">
-                            <div className="w-24 h-24 md:w-32 md:h-32 rounded-3xl overflow-hidden border-4 border-howl-orange/20 shadow-2xl">
-                                <img src="https://i.pravatar.cc/150?u=me" className="w-full h-full object-cover" alt="Profile" />
+                            <div className="w-24 h-24 md:w-32 md:h-32 rounded-3xl overflow-hidden border-4 border-howl-orange/20 shadow-2xl relative">
+                                <img
+                                    src={user?.avatar_url || "https://i.pravatar.cc/150?u=me"}
+                                    className="w-full h-full object-cover"
+                                    alt="Profile"
+                                    onError={(e) => {
+                                        // Fallback if URL is broken
+                                        (e.target as HTMLImageElement).src = "https://i.pravatar.cc/150?u=fallback";
+                                    }}
+                                />
+                                {isUploading && (
+                                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                                        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                                    </div>
+                                )}
                             </div>
-                            <button className="absolute -bottom-2 -right-2 w-10 h-10 bg-howl-orange text-white rounded-xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                            <button
+                                onClick={handleCameraClick}
+                                disabled={isUploading}
+                                className="absolute -bottom-2 -right-2 w-10 h-10 bg-howl-orange text-white rounded-xl flex items-center justify-center shadow-lg hover:scale-110 transition-transform cursor-pointer disabled:opacity-50 disabled:hover:scale-100"
+                            >
                                 <Camera size={20} />
                             </button>
                         </div>
                         <div>
-                            <h1 className="text-3xl md:text-4xl font-heading font-black text-white uppercase tracking-tight mb-1">{userData.name}</h1>
+                            <h1 className="text-3xl md:text-4xl font-heading font-black text-white uppercase tracking-tight mb-1">{userData.name || "Traveller"}</h1>
                             <p className="text-gray-500 font-bold uppercase tracking-widest text-xs flex items-center gap-2">
-                                <MapPin size={12} className="text-howl-orange" /> {userData.location}
+                                <MapPin size={12} className="text-howl-orange" /> {userData.location || "No Location"}
                             </p>
                         </div>
                     </div>
@@ -92,6 +166,8 @@ export default function Profile() {
                                 />
                             </div>
                         </div>
+
+                        {/* Removed manual URL input since we have upload now */}
 
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest px-1">Location</label>

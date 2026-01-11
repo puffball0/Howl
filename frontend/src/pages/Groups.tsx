@@ -1,10 +1,12 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { MessageSquare, Users, MapPin, ChevronRight, Search } from "lucide-react";
+import { MessageSquare, Users, MapPin, ChevronRight, Search, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { cn } from "../lib/utils";
+import { groupsApi, type Group } from "../services/api";
 
-// Mock joined groups
-const joinedGroups = [
+// Fallback mock data
+const mockGroups = [
     {
         id: "1",
         title: "Tropical Paradise",
@@ -38,6 +40,26 @@ const joinedGroups = [
 ];
 
 export default function Groups() {
+    const [groups, setGroups] = useState<Group[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const loadGroups = async () => {
+            try {
+                const data = await groupsApi.getMyGroups();
+                setGroups(data);
+            } catch (err) {
+                console.log('Using mock data for groups');
+                setGroups(mockGroups as Group[]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadGroups();
+    }, []);
+
+    const joinedGroups = groups.length > 0 ? groups : mockGroups;
+
     return (
         <div className="min-h-full w-full bg-howl-navy p-6 lg:p-10 pb-32">
             <div className="max-w-4xl mx-auto">

@@ -3,12 +3,13 @@ import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Search, MapPin, Calendar, Users, AlertCircle,
-    ArrowRight, Plus, ChevronLeft, Check, X, Shield, Info
+    ArrowRight, Plus, ChevronLeft, Check, X, Shield, Info, Loader2
 } from "lucide-react";
 import { cn } from "../lib/utils";
+import { tripsApi, type SimilarTrip, type TripCreate } from "../services/api";
 
-// Mock similar trips
-const similarTrips = [
+// Fallback mock similar trips
+const mockSimilarTrips = [
     {
         id: "1",
         title: "Tropical Paradise",
@@ -33,6 +34,58 @@ export default function CreateTrip() {
     const navigate = useNavigate();
     const [step, setStep] = useState<"search" | "results" | "form">("search");
     const [searchData, setSearchData] = useState({ destination: "", date: "" });
+    const [similarTrips, setSimilarTrips] = useState<SimilarTrip[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
+    const [formData, setFormData] = useState({
+        title: "",
+        duration: "",
+        max_members: 8,
+        age_limit: "All Ages",
+        gender: "All Genders",
+        vibe: "CHILL",
+        join_type: "instant" as "instant" | "request"
+    });
+
+    const handleSearch = async () => {
+        if (!searchData.destination) return;
+        setIsSearching(true);
+        try {
+            const results = await tripsApi.searchSimilar(searchData.destination);
+            setSimilarTrips(results);
+        } catch (err) {
+            console.log('Using mock similar trips');
+            setSimilarTrips(mockSimilarTrips as SimilarTrip[]);
+        } finally {
+            setIsSearching(false);
+            setStep("results");
+        }
+    };
+
+    const handleCreateTrip = async () => {
+        setIsCreating(true);
+        try {
+            const tripData: TripCreate = {
+                title: formData.title || `Trip to ${searchData.destination}`,
+                location: searchData.destination,
+                duration: formData.duration,
+                dates: searchData.date,
+                max_members: formData.max_members,
+                age_limit: formData.age_limit,
+                gender: formData.gender,
+                vibe: formData.vibe,
+                join_type: formData.join_type,
+                tags: []
+            };
+            const newTrip = await tripsApi.create(tripData);
+            navigate(`/trip/${newTrip.id}`);
+        } catch (err) {
+            console.log('Trip creation failed, navigating to home');
+            navigate('/home');
+        } finally {
+            setIsCreating(false);
+        }
+    };
 
     // Step 1: Search / Initial Intent
     if (step === "search") {
@@ -220,10 +273,17 @@ export default function CreateTrip() {
                     </div>
 
                     <button
-                        className="w-full h-16 bg-gradient-to-r from-howl-orange to-howl-burnt text-white rounded-2xl font-black uppercase tracking-widest shadow-2xl shadow-howl-orange/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
-                        onClick={() => navigate("/home")}
+                        className="w-full h-16 bg-gradient-to-r from-howl-orange to-howl-burnt text-white rounded-2xl font-black uppercase tracking-widest shadow-2xl shadow-howl-orange/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:hover:scale-100"
+                        onClick={handleCreateTrip}
+                        disabled={isCreating}
                     >
-                        Summon Your Pack
+                        {isCreating ? (
+                            <>
+                                <Loader2 className="animate-spin" /> Summoning...
+                            </>
+                        ) : (
+                            "Summon Your Pack"
+                        )}
                     </button>
                 </form>
             </div>

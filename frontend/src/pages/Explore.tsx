@@ -1,80 +1,122 @@
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Search, MapPin, SlidersHorizontal, Plus } from "lucide-react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Search, MapPin, SlidersHorizontal, Plus, Loader2 } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
+import { tripsApi, type TripListItem } from "../services/api";
 
-// Expanded Mock Data
-const allTrips = [
+// Fallback mock data
+const mockTrips = [
     {
-        id: 1,
+        id: "1",
         title: "Tropical Paradise",
         location: "Bali, Indonesia",
         duration: "7 Days",
-        image: "/images/trip-beach.png",
+        image_url: "/images/trip-beach.png",
         tags: ["Beach", "Relax"],
+        member_count: 5,
+        max_members: 8
     },
     {
-        id: 2,
+        id: "2",
         title: "Alpine Summit",
         location: "Swiss Alps",
         duration: "5 Days",
-        image: "/images/trip-mountain.png",
-        tags: ["Hiking", "Cold"],
+        image_url: "/images/trip-mountain.png",
+        tags: ["Mountain", "Hiking"],
+        member_count: 3,
+        max_members: 6
     },
     {
-        id: 3,
+        id: "3",
         title: "Desert Canyon",
         location: "Utah, USA",
         duration: "4 Days",
-        image: "/images/trip-desert.png",
+        image_url: "/images/trip-desert.png",
         tags: ["Adventure", "Heat"],
+        member_count: 4,
+        max_members: 8
     },
     {
-        id: 4,
+        id: "4",
         title: "Mystic Forest",
         location: "Oregon, USA",
         duration: "3 Days",
-        image: "/images/hero-sunset.png",
-        tags: ["Nature", "Camping"],
+        image_url: "/images/hero-sunset.png",
+        tags: ["Forest", "Nature"],
+        member_count: 2,
+        max_members: 5
     },
     {
-        id: 5,
+        id: "5",
         title: "Northern Lights",
         location: "Reykjavik, Iceland",
         duration: "6 Days",
-        image: "/images/trip-mountain.png", // Reusing for demo
+        image_url: "/images/trip-mountain.png",
         tags: ["Cold", "Nature"],
+        member_count: 4,
+        max_members: 8
     },
     {
-        id: 6,
+        id: "6",
         title: "Safari Adventure",
         location: "Kenya, Africa",
         duration: "10 Days",
-        image: "/images/trip-desert.png", // Reusing for demo
+        image_url: "/images/trip-desert.png",
         tags: ["Wildlife", "Adventure"],
+        member_count: 6,
+        max_members: 10
     },
     {
-        id: 7,
+        id: "7",
         title: "Urban Explorer",
         location: "Tokyo, Japan",
         duration: "5 Days",
-        image: "/images/hero-sunset.png", // Reusing for demo
+        image_url: "/images/hero-sunset.png",
         tags: ["City", "Food"],
+        member_count: 3,
+        max_members: 6
     },
     {
-        id: 8,
+        id: "8",
         title: "Island Hopping",
         location: "Phuket, Thailand",
         duration: "8 Days",
-        image: "/images/trip-beach.png", // Reusing for demo
+        image_url: "/images/trip-beach.png",
         tags: ["Beach", "Party"],
+        member_count: 7,
+        max_members: 10
     },
 ];
 
 const filters = ["All", "Mountain", "Beach", "City", "Forest"];
 
 export default function Explore() {
+    const navigate = useNavigate();
     const [selectedFilter, setSelectedFilter] = useState("All");
+    const [searchQuery, setSearchQuery] = useState("");
+    const [trips, setTrips] = useState<TripListItem[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const loadTrips = async () => {
+            try {
+                const data = await tripsApi.list({ search: searchQuery || undefined });
+                setTrips(data);
+            } catch (err) {
+                console.log('Using mock data for trips');
+                setTrips(mockTrips as TripListItem[]);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadTrips();
+    }, [searchQuery]);
+
+    // Filter trips based on selection
+    const allTrips = trips.length > 0 ? trips : mockTrips;
+    const filteredTrips = selectedFilter === "All"
+        ? allTrips
+        : allTrips.filter(trip => trip.tags?.some(tag => tag.toLowerCase().includes(selectedFilter.toLowerCase())));
 
     return (
         <div className="min-h-full w-full bg-howl-navy text-white p-6 lg:p-10 pb-32">
@@ -119,7 +161,7 @@ export default function Explore() {
 
             {/* Grid Layout */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
-                {allTrips.map((trip, index) => (
+                {filteredTrips.map((trip, index) => (
                     <motion.div
                         key={trip.id}
                         initial={{ opacity: 0, y: 20 }}
@@ -132,7 +174,7 @@ export default function Explore() {
                         >
                             <div className="h-64 relative overflow-hidden">
                                 <img
-                                    src={trip.image}
+                                    src={trip.image_url || "/images/trip-beach.png"}
                                     alt={trip.title}
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                 />
@@ -172,6 +214,7 @@ export default function Explore() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5 }}
+                    onClick={() => navigate('/create-trip')}
                     className="min-h-[400px] border-2 border-dashed border-white/10 rounded-3xl flex flex-col items-center justify-center text-center p-6 cursor-pointer hover:border-howl-orange hover:bg-howl-orange/5 transition-all group"
                 >
                     <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-howl-orange">
