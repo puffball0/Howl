@@ -39,9 +39,12 @@ class ApiClient {
         const token = getAccessToken();
 
         const headers: HeadersInit = {
-            'Content-Type': 'application/json',
             ...options.headers,
         };
+
+        if (!(options.body instanceof FormData)) {
+            (headers as Record<string, string>)['Content-Type'] = 'application/json';
+        }
 
         if (token) {
             (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
@@ -110,18 +113,22 @@ class ApiClient {
     }
 
     // POST request
+    // POST request
     async post<T>(endpoint: string, data?: unknown): Promise<T> {
+        const isFormData = data instanceof FormData;
         return this.request<T>(endpoint, {
             method: 'POST',
-            body: data ? JSON.stringify(data) : undefined,
+            body: isFormData ? (data as FormData) : (data ? JSON.stringify(data) : undefined),
         });
     }
 
     // PUT request
+    // PUT request
     async put<T>(endpoint: string, data?: unknown): Promise<T> {
+        const isFormData = data instanceof FormData;
         return this.request<T>(endpoint, {
             method: 'PUT',
-            body: data ? JSON.stringify(data) : undefined,
+            body: isFormData ? (data as FormData) : (data ? JSON.stringify(data) : undefined),
         });
     }
 
@@ -228,6 +235,16 @@ export const tripsApi = {
 
     searchSimilar: (destination: string) =>
         api.get<SimilarTrip[]>(`/api/trips/search/similar?destination=${destination}`),
+};
+
+// ============ COMMON API ============
+export const commonApi = {
+    uploadImage: async (file: File) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await api.post<{ url: string }>('/api/upload', formData);
+        return response;
+    }
 };
 
 // ============ GROUPS API ============
@@ -392,6 +409,7 @@ export interface GroupDetails {
     location: string;
     member_count: number;
     image?: string;
+    created_at: string;
 }
 
 export interface Message {

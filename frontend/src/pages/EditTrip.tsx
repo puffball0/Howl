@@ -3,9 +3,9 @@ import { useNavigate, useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
     MapPin, Calendar, Users, Shield, Save,
-    ChevronLeft, Loader2, AlertCircle
+    ChevronLeft, Loader2, AlertCircle, Camera, Trash2
 } from "lucide-react";
-import { tripsApi, type TripCreate, type TripDetail } from "../services/api";
+import { tripsApi, commonApi, type TripCreate, type TripDetail } from "../services/api";
 
 export default function EditTrip() {
     const { id } = useParams();
@@ -18,6 +18,7 @@ export default function EditTrip() {
     const [formData, setFormData] = useState<Partial<TripCreate>>({
         title: "",
         location: "",
+        image_url: "",
         duration: "",
         dates: "",
         max_members: 8,
@@ -36,7 +37,7 @@ export default function EditTrip() {
                 const trip = await tripsApi.getById(id);
                 // Check if user is leader (backend will also enforce, but good for UX)
                 if (!trip.is_leader) {
-                    navigate(`/trip/${id}`); // Redirect if not leader
+                    navigate(`/trip/${id}`, { replace: true }); // Redirect if not leader
                     return;
                 }
 
@@ -51,6 +52,7 @@ export default function EditTrip() {
                     gender: trip.restrictions.gender,
                     vibe: trip.restrictions.vibe || "CHILL",
                     join_type: trip.restrictions.joinType,
+                    image_url: trip.image_url,
                     tags: trip.tags
                 });
             } catch (err) {
@@ -68,12 +70,36 @@ export default function EditTrip() {
         setIsSaving(true);
         try {
             await tripsApi.update(id, formData);
-            navigate(`/trip/${id}`);
+            navigate(`/trip/${id}`, { replace: true });
         } catch (err) {
             console.error("Failed to update trip:", err);
             setError("Failed to save changes. Please try again.");
         } finally {
             setIsSaving(false);
+        }
+    };
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || !e.target.files[0]) return;
+
+        const file = e.target.files[0];
+        try {
+            const result = await commonApi.uploadImage(file);
+            setFormData({ ...formData, image_url: result.url });
+        } catch (err) {
+            console.error("Upload failed", err);
+        }
+    };
+
+    const handleDeleteTrip = async () => {
+        if (!id || !window.confirm("Are you sure you want to delete this pack? This action cannot be undone.")) return;
+
+        try {
+            await tripsApi.delete(id);
+            navigate('/home');
+        } catch (err) {
+            console.error("Delete failed", err);
+            setError("Failed to delete trip.");
         }
     };
 
@@ -89,7 +115,7 @@ export default function EditTrip() {
         <div className="min-h-full w-full bg-howl-navy p-6 lg:p-12 text-white">
             <div className="max-w-2xl mx-auto">
                 <button
-                    onClick={() => navigate(`/trip/${id}`)}
+                    onClick={() => navigate(`/trip/${id}`, { replace: true })}
                     className="flex items-center gap-2 text-howl-orange font-bold mb-8 hover:text-white transition-colors"
                 >
                     <ChevronLeft size={20} /> CANCEL EDITING
@@ -164,6 +190,32 @@ export default function EditTrip() {
                         </div>
                     </div>
 
+                    {/* Image Upload */}
+                    <div className="space-y-6">
+                        <h3 className="text-sm font-black text-howl-orange uppercase tracking-widest">Cover Image</h3>
+                        <div className="relative w-full h-48 bg-white/5 border-2 border-dashed border-white/10 rounded-2xl overflow-hidden flex flex-col items-center justify-center hover:border-howl-orange/50 transition-colors group">
+                            {formData.image_url ? (
+                                <>
+                                    <img src={formData.image_url} className="absolute inset-0 w-full h-full object-cover" alt="Cover" />
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <Camera className="w-8 h-8 text-white" />
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <Camera className="w-10 h-10 text-gray-600 mb-2 group-hover:text-howl-orange transition-colors" />
+                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Upload Cover Photo</p>
+                                </>
+                            )}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageUpload}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            />
+                        </div>
+                    </div>
+
                     {/* Restrictions */}
                     <div className="space-y-6">
                         <h3 className="text-sm font-black text-howl-orange uppercase tracking-widest">Requirements & Vibe</h3>
@@ -227,8 +279,8 @@ export default function EditTrip() {
                                             key={vibe}
                                             onClick={() => setFormData({ ...formData, vibe })}
                                             className={`px-4 py-2 rounded-lg border text-[10px] font-black transition-all ${formData.vibe === vibe
-                                                    ? "bg-howl-orange border-howl-orange text-white"
-                                                    : "bg-white/5 border-white/10 text-gray-400 hover:border-howl-orange hover:text-howl-orange"
+                                                ? "bg-howl-orange border-howl-orange text-white"
+                                                : "bg-white/5 border-white/10 text-gray-400 hover:border-howl-orange hover:text-howl-orange"
                                                 }`}
                                         >
                                             {vibe}
@@ -239,21 +291,30 @@ export default function EditTrip() {
                         </div>
                     </div>
 
-                    <button
-                        className="w-full h-16 bg-gradient-to-r from-howl-orange to-howl-burnt text-white rounded-2xl font-black uppercase tracking-widest shadow-2xl shadow-howl-orange/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:hover:scale-100"
-                        onClick={handleSave}
-                        disabled={isSaving}
-                    >
-                        {isSaving ? (
-                            <>
-                                <Loader2 className="animate-spin" /> Saving Changes...
-                            </>
-                        ) : (
-                            <>
-                                <Save size={20} /> Save Changes
-                            </>
-                        )}
-                    </button>
+                    <div className="flex flex-col gap-4">
+                        <button
+                            className="w-full h-16 bg-gradient-to-r from-howl-orange to-howl-burnt text-white rounded-2xl font-black uppercase tracking-widest shadow-2xl shadow-howl-orange/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:hover:scale-100"
+                            onClick={handleSave}
+                            disabled={isSaving}
+                        >
+                            {isSaving ? (
+                                <>
+                                    <Loader2 className="animate-spin" /> Saving...
+                                </>
+                            ) : (
+                                <>
+                                    <Save size={20} /> Save Changes
+                                </>
+                            )}
+                        </button>
+
+                        <button
+                            className="w-full h-14 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 rounded-2xl font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+                            onClick={handleDeleteTrip}
+                        >
+                            <Trash2 size={20} /> Delete Pack
+                        </button>
+                    </div>
                 </form>
             </div>
 

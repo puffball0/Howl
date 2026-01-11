@@ -125,7 +125,7 @@ export default function TripDetails() {
         <div className="min-h-full w-full bg-howl-navy text-white flex flex-col">
             {/* HERO SECTION */}
             <div className="relative w-full h-[40vh] lg:h-[45vh] shrink-0 overflow-hidden">
-                <img src={trip.image} className="absolute inset-0 w-full h-full object-cover" alt={trip.title} />
+                <img src={trip.image_url || trip.image} className="absolute inset-0 w-full h-full object-cover" alt={trip.title} />
                 <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-howl-navy" />
 
                 <button
@@ -216,7 +216,7 @@ export default function TripDetails() {
                     <section>
                         <h2 className="text-xl font-heading font-black mb-6 flex items-center justify-between">
                             <span>THE PACK</span>
-                            <span className="text-sm text-howl-orange">{trip.members.length + 1} Members</span>
+                            <span className="text-sm text-howl-orange">{trip.member_count} Members</span>
                         </h2>
                         <div className="flex flex-wrap gap-4">
                             {/* Leader */}
@@ -230,12 +230,14 @@ export default function TripDetails() {
                                 <span className="text-xs font-bold text-howl-orange">Leader</span>
                             </div>
                             {/* Other Members */}
-                            {trip.members.map((m: any) => (
-                                <div key={m.id} className="flex flex-col items-center gap-2 opacity-60">
-                                    <img src={m.avatar} className="w-16 h-16 rounded-3xl object-cover" alt={m.name} />
-                                    <span className="text-xs font-bold">{m.name}</span>
-                                </div>
-                            ))}
+                            {trip.members
+                                .filter((m: any) => m.role !== 'leader')
+                                .map((m: any) => (
+                                    <div key={m.id} className="flex flex-col items-center gap-2 opacity-60">
+                                        <img src={m.avatar || m.avatar_url} className="w-16 h-16 rounded-3xl object-cover" alt={m.name || m.display_name} />
+                                        <span className="text-xs font-bold">{m.name || m.display_name}</span>
+                                    </div>
+                                ))}
                             {/* Slots Left */}
                             <div className="w-16 h-16 border-2 border-dashed border-white/10 rounded-3xl flex items-center justify-center text-white/20">
                                 <Users size={20} />
@@ -245,8 +247,8 @@ export default function TripDetails() {
                 </div>
 
                 {/* RIGHT COL: SIDEBAR ACTIONS & RESTRICTIONS */}
-                <div className="space-y-6">
-                    <div className="bg-[#02121f] border border-white/5 rounded-3xl p-8 sticky top-6">
+                <div className="space-y-6 sticky top-6 h-fit">
+                    <div className="bg-[#02121f] border border-white/5 rounded-3xl p-8">
                         <h3 className="text-xl font-heading font-black mb-6 uppercase">Restrictions</h3>
                         <div className="space-y-4 mb-10">
                             {[

@@ -24,7 +24,11 @@ export default function GroupChat() {
     const [messages, setMessages] = useState<any[]>([]);
     const [inputText, setInputText] = useState("");
     const [isLoading, setIsLoading] = useState(true);
-    const [groupInfo, setGroupInfo] = useState({ title: "Pack Chat", member_count: 0 });
+    const [groupInfo, setGroupInfo] = useState({
+        title: "Pack Chat",
+        member_count: 0,
+        created_at: new Date().toISOString()
+    });
     const scrollRef = useRef<HTMLDivElement>(null);
     const wsRef = useRef<WebSocket | null>(null);
 
@@ -38,11 +42,19 @@ export default function GroupChat() {
                     groupsApi.getGroupDetails(id)
                 ]);
                 setMessages(messagesData.messages);
-                setGroupInfo({ title: groupData.title, member_count: groupData.member_count });
+                setGroupInfo({
+                    title: groupData.title,
+                    member_count: groupData.member_count,
+                    created_at: groupData.created_at
+                });
             } catch (err) {
                 console.log('Using mock data for chat');
                 setMessages(mockMessages);
-                setGroupInfo({ title: "Tropical Paradise", member_count: 8 });
+                setGroupInfo({
+                    title: "Tropical Paradise",
+                    member_count: 8,
+                    created_at: new Date().toISOString()
+                });
             } finally {
                 setIsLoading(false);
             }
@@ -196,7 +208,7 @@ export default function GroupChat() {
                             Tropical Paradise
                         </h2>
                         <div className="flex items-center gap-2 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
-                            <span className="flex items-center gap-1"><Users size={12} /> 8 Members</span>
+                            <span className="flex items-center gap-1"><Users size={12} /> {groupInfo.member_count} Members</span>
                             <span className="w-1 h-1 bg-gray-700 rounded-full" />
                             <span className="text-howl-orange">Online Now</span>
                         </div>
@@ -214,7 +226,7 @@ export default function GroupChat() {
             >
                 <div className="text-center py-10">
                     <div className="inline-block px-4 py-1 rounded-full bg-white/5 border border-white/5 text-[10px] font-black text-gray-600 uppercase tracking-widest">
-                        Group created on Sept 01, 2026
+                        Group created on {new Date(groupInfo.created_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })}
                     </div>
                 </div>
 

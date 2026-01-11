@@ -3,10 +3,10 @@ import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Search, MapPin, Calendar, Users, AlertCircle,
-    ArrowRight, Plus, ChevronLeft, Check, X, Shield, Info, Loader2
+    ArrowRight, Plus, ChevronLeft, Check, X, Shield, Info, Loader2, Camera
 } from "lucide-react";
 import { cn } from "../lib/utils";
-import { tripsApi, type SimilarTrip, type TripCreate } from "../services/api";
+import { tripsApi, commonApi, type SimilarTrip, type TripCreate } from "../services/api";
 
 // Fallback mock similar trips
 const mockSimilarTrips = [
@@ -44,8 +44,21 @@ export default function CreateTrip() {
         age_limit: "All Ages",
         gender: "All Genders",
         vibe: "CHILL",
-        join_type: "instant" as "instant" | "request"
+        join_type: "instant" as "instant" | "request",
+        image: ""
     });
+
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || !e.target.files[0]) return;
+
+        const file = e.target.files[0];
+        try {
+            const result = await commonApi.uploadImage(file);
+            setFormData({ ...formData, image: result.url });
+        } catch (err) {
+            console.error("Upload failed", err);
+        }
+    };
 
     const handleSearch = async () => {
         if (!searchData.destination) return;
@@ -71,6 +84,7 @@ export default function CreateTrip() {
                 duration: formData.duration,
                 dates: searchData.date,
                 max_members: formData.max_members,
+                image_url: formData.image,
                 age_limit: formData.age_limit,
                 gender: formData.gender,
                 vibe: formData.vibe,

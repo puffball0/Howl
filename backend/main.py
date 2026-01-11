@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.config import get_settings
 from app.database import engine, Base
-from app.routers import auth_router, users_router, trips_router, messages_router, groups_router, calendar_router
+from app.routers import auth_router, users_router, trips_router, messages_router, groups_router, calendar_router, upload_router
 from app.websocket.chat import websocket_chat_endpoint
 
 settings = get_settings()
@@ -52,7 +52,9 @@ app.include_router(users_router)
 app.include_router(trips_router)
 app.include_router(messages_router)
 app.include_router(groups_router)
+app.include_router(groups_router)
 app.include_router(calendar_router)
+app.include_router(upload_router)
 
 
 # WebSocket endpoint for real-time chat

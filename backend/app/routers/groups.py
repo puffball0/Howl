@@ -85,5 +85,6 @@ async def get_group_details(
         "title": trip.title,
         "location": trip.location,
         "member_count": member_count,
-        "image": trip.image_url
+        "image": trip.image_url,
+        "created_at": trip.created_at.isoformat()
     }
