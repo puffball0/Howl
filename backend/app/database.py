@@ -7,10 +7,32 @@ settings = get_settings()
 
 # Fix SQLAlchemy compatibility with some providers (like Render/Neon) 
 # and handle common copy-paste errors (whitespace, quotes)
+# Fix SQLAlchemy compatibility with some providers (like Render/Neon) 
+# and handle common copy-paste errors (whitespace, quotes, psql command)
 database_url = settings.database_url
 
 if database_url:
+    database_url = database_url.strip()
+    
+    # Handle case where user copied "psql 'postgres://...'"
+    if database_url.startswith("psql"):
+        import re
+        # Try to find the URL inside single or double quotes
+        match = re.search(r"['\"](postgres.*?)['\"]", database_url)
+        if match:
+            database_url = match.group(1)
+        else:
+            # Fallback: simple split if no quotes found or regex fails
+            parts = database_url.split()
+            for part in parts:
+                if part.startswith("postgres"):
+                    database_url = part
+                    break
+
+    # Clean quotes again just in case
     database_url = database_url.strip().strip('"').strip("'")
+    
+    # Fix protocol
     if database_url.startswith("postgres://"):
         database_url = database_url.replace("postgres://", "postgresql://", 1)
 
