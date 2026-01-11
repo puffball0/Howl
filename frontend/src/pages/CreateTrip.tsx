@@ -219,18 +219,82 @@ export default function CreateTrip() {
                         <div className="space-y-4">
                             <div>
                                 <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Trip Title</label>
-                                <input type="text" placeholder="Adventuring into the unknown..." className="w-full h-14 px-6 bg-white/5 border border-white/10 rounded-xl font-bold focus:outline-none focus:border-howl-orange transition-all" />
+                                <input
+                                    type="text"
+                                    value={formData.title}
+                                    placeholder={`Trip to ${searchData.destination}`}
+                                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                    className="w-full h-14 px-6 bg-white/5 border border-white/10 rounded-xl font-bold focus:outline-none focus:border-howl-orange transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Location</label>
+                                <div className="relative">
+                                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                    <input
+                                        type="text"
+                                        value={searchData.destination}
+                                        onChange={(e) => setSearchData({ ...searchData, destination: e.target.value })}
+                                        className="w-full h-14 pl-12 pr-6 bg-white/5 border border-white/10 rounded-xl font-bold focus:outline-none focus:border-howl-orange transition-all"
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Description</label>
+                                <textarea
+                                    rows={4}
+                                    placeholder="Describe your adventure..."
+                                    className="w-full p-6 bg-white/5 border border-white/10 rounded-xl font-medium focus:outline-none focus:border-howl-orange transition-all resize-none"
+                                />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Duration</label>
-                                    <input type="text" placeholder="e.g. 7 Days" className="w-full h-14 px-6 bg-white/5 border border-white/10 rounded-xl font-bold focus:outline-none focus:border-howl-orange transition-all" />
+                                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Dates</label>
+                                    <input
+                                        type="text"
+                                        value={searchData.date}
+                                        onChange={(e) => setSearchData({ ...searchData, date: e.target.value })}
+                                        placeholder="e.g. Sept 12 - 19"
+                                        className="w-full h-14 px-6 bg-white/5 border border-white/10 rounded-xl font-bold focus:outline-none focus:border-howl-orange transition-all"
+                                    />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Max Members</label>
-                                    <input type="number" placeholder="8" className="w-full h-14 px-6 bg-white/5 border border-white/10 rounded-xl font-bold focus:outline-none focus:border-howl-orange transition-all" />
+                                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Duration</label>
+                                    <input
+                                        type="text"
+                                        value={formData.duration}
+                                        onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
+                                        placeholder="e.g. 7 Days"
+                                        className="w-full h-14 px-6 bg-white/5 border border-white/10 rounded-xl font-bold focus:outline-none focus:border-howl-orange transition-all"
+                                    />
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    {/* Image Upload */}
+                    <div className="space-y-6">
+                        <h3 className="text-sm font-black text-howl-orange uppercase tracking-widest">Cover Image</h3>
+                        <div className="relative w-full h-48 bg-white/5 border-2 border-dashed border-white/10 rounded-2xl overflow-hidden flex flex-col items-center justify-center hover:border-howl-orange/50 transition-colors group">
+                            {formData.image ? (
+                                <>
+                                    <img src={formData.image} className="absolute inset-0 w-full h-full object-cover" alt="Cover" />
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <Camera className="w-8 h-8 text-white" />
+                                    </div>
+                                </>
+                            ) : (
+                                <>
+                                    <Camera className="w-10 h-10 text-gray-600 mb-2 group-hover:text-howl-orange transition-colors" />
+                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Upload Cover Photo</p>
+                                </>
+                            )}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageUpload}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                            />
                         </div>
                     </div>
 
@@ -241,7 +305,11 @@ export default function CreateTrip() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Age Range</label>
-                                    <select className="w-full h-14 px-6 bg-white/5 border border-white/10 rounded-xl font-bold focus:outline-none focus:border-howl-orange transition-all appearance-none cursor-pointer">
+                                    <select
+                                        value={formData.age_limit}
+                                        onChange={(e) => setFormData({ ...formData, age_limit: e.target.value })}
+                                        className="w-full h-14 px-6 bg-white/5 border border-white/10 rounded-xl font-bold focus:outline-none focus:border-howl-orange transition-all appearance-none cursor-pointer"
+                                    >
                                         <option style={{ backgroundColor: "#0f172a", color: "white" }}>All Ages</option>
                                         <option style={{ backgroundColor: "#0f172a", color: "white" }}>18-25</option>
                                         <option style={{ backgroundColor: "#0f172a", color: "white" }}>21-35</option>
@@ -250,38 +318,57 @@ export default function CreateTrip() {
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Gender</label>
-                                    <select className="w-full h-14 px-6 bg-white/5 border border-white/10 rounded-xl font-bold focus:outline-none focus:border-howl-orange transition-all appearance-none cursor-pointer">
+                                    <select
+                                        value={formData.gender}
+                                        onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                                        className="w-full h-14 px-6 bg-white/5 border border-white/10 rounded-xl font-bold focus:outline-none focus:border-howl-orange transition-all appearance-none cursor-pointer"
+                                    >
                                         <option style={{ backgroundColor: "#0f172a", color: "white" }}>All Genders</option>
                                         <option style={{ backgroundColor: "#0f172a", color: "white" }}>Women Only</option>
                                         <option style={{ backgroundColor: "#0f172a", color: "white" }}>Men Only</option>
                                     </select>
                                 </div>
                             </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Max Members</label>
+                                    <input
+                                        type="number"
+                                        value={formData.max_members}
+                                        onChange={(e) => setFormData({ ...formData, max_members: parseInt(e.target.value) })}
+                                        className="w-full h-14 px-6 bg-white/5 border border-white/10 rounded-xl font-bold focus:outline-none focus:border-howl-orange transition-all"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Join Type</label>
+                                    <select
+                                        value={formData.join_type}
+                                        onChange={(e) => setFormData({ ...formData, join_type: e.target.value as "instant" | "request" })}
+                                        className="w-full h-14 px-6 bg-white/5 border border-white/10 rounded-xl font-bold focus:outline-none focus:border-howl-orange transition-all appearance-none cursor-pointer"
+                                    >
+                                        <option value="instant" style={{ backgroundColor: "#0f172a", color: "white" }}>Instant Join</option>
+                                        <option value="request" style={{ backgroundColor: "#0f172a", color: "white" }}>Request Only</option>
+                                    </select>
+                                </div>
+                            </div>
+
                             <div>
                                 <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Pack Vibe</label>
                                 <div className="flex flex-wrap gap-2">
                                     {["CHILL", "INTENSE", "NOMADIC", "PARTY", "CULTURAL"].map(vibe => (
-                                        <button key={vibe} className="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-[10px] font-black hover:border-howl-orange hover:text-howl-orange transition-all">
+                                        <button
+                                            key={vibe}
+                                            onClick={() => setFormData({ ...formData, vibe })}
+                                            className={`px-4 py-2 rounded-lg border text-[10px] font-black transition-all ${formData.vibe === vibe
+                                                ? "bg-howl-orange border-howl-orange text-white"
+                                                : "bg-white/5 border-white/10 text-gray-400 hover:border-howl-orange hover:text-howl-orange"
+                                                }`}
+                                        >
                                             {vibe}
                                         </button>
                                     ))}
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Join Logic */}
-                    <div className="p-6 bg-[#02121f] rounded-2xl border border-white/5 space-y-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex gap-4">
-                                <Shield className="text-howl-orange mt-1" size={20} />
-                                <div>
-                                    <h4 className="font-black uppercase tracking-tighter">Request only</h4>
-                                    <p className="text-xs text-gray-500 font-bold">You must approve each member manually.</p>
-                                </div>
-                            </div>
-                            <div className="w-12 h-6 bg-howl-orange rounded-full relative p-1 cursor-pointer">
-                                <div className="w-4 h-4 bg-white rounded-full ml-auto shadow-sm" />
                             </div>
                         </div>
                     </div>
