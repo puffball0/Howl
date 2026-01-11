@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Search, MapPin, ChevronRight, Plus, Loader2 } from "lucide-react";
+import { Search, MapPin, ChevronRight, Loader2 } from "lucide-react";
 import { tripsApi, type TripListItem } from "../services/api";
 
 // Fallback mock data
@@ -181,8 +181,11 @@ export default function Home() {
                                             </div>
                                         </div>
 
-                                        <div className="w-full py-3 mt-4 bg-white/5 group-hover:bg-howl-orange text-white rounded-xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2">
-                                            Join Trip
+                                        <div className={`w-full py-3 mt-4 rounded-xl font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 ${trip.is_member
+                                            ? "bg-green-500/10 text-green-500 border border-green-500/20"
+                                            : "bg-white/5 group-hover:bg-howl-orange text-white"
+                                            }`}>
+                                            {trip.is_member ? "Already Joined" : "Join Trip"}
                                         </div>
                                     </div>
                                 </Link>

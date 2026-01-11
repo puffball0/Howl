@@ -321,6 +321,7 @@ export interface TripListItem {
     tags: string[];
     member_count: number;
     max_members: number;
+    is_member: boolean;
 }
 
 export interface TripDetail {

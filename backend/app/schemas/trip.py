@@ -96,6 +96,7 @@ class TripList(BaseModel):
     tags: List[str] = []
     member_count: int = 0
     max_members: int = 8
+    is_member: bool = False
     
     class Config:
         from_attributes = True

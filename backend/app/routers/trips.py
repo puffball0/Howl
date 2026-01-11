@@ -41,6 +41,13 @@ async def list_trips(
     result = []
     for trip in trips:
         member_count = db.query(TripMember).filter(TripMember.trip_id == trip.id).count()
+        is_member = False
+        if current_user:
+            is_member = db.query(TripMember).filter(
+                TripMember.trip_id == trip.id,
+                TripMember.user_id == current_user.id
+            ).first() is not None
+            
         result.append(TripList(
             id=trip.id,
             title=trip.title,
@@ -49,7 +56,8 @@ async def list_trips(
             image_url=trip.image_url,
             tags=trip.tags or [],
             member_count=member_count,
-            max_members=trip.max_members
+            max_members=trip.max_members,
+            is_member=is_member
         ))
     
     return result
