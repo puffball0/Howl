@@ -54,11 +54,14 @@ const AuthCallback = () => {
 };
 
 function AppContent() {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => {
+    return !sessionStorage.getItem('startSplashShown');
+  });
   const [isDarkMode, setIsDarkMode] = useState(true);
 
   // Handle Splash Screen completion
   const handleSplashComplete = () => {
+    sessionStorage.setItem('startSplashShown', 'true');
     setLoading(false);
   };
 
