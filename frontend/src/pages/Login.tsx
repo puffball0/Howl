@@ -7,7 +7,7 @@ import { useAuth } from "../contexts/AuthContext";
 
 const Login = () => {
     const navigate = useNavigate();
-    const { login, googleLogin } = useAuth();
+    const { login } = useAuth();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -98,35 +98,7 @@ const Login = () => {
                 </Button>
             </form>
 
-            <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-white/10" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-howl-navy lg:bg-transparent px-2 text-muted-foreground px-2">
-                        Or continue with
-                    </span>
-                </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
-                <Button
-                    variant="outline"
-                    className="bg-black/20 border-white/10 text-white hover:bg-white/10 hover:text-white"
-                    onClick={googleLogin}
-                    type="button"
-                >
-                    Google
-                </Button>
-                <Button
-                    variant="outline"
-                    className="bg-black/20 border-white/10 text-white hover:bg-white/10 hover:text-white"
-                    type="button"
-                    disabled
-                >
-                    Apple
-                </Button>
-            </div>
 
             <p className="text-center text-sm text-muted-foreground">
                 Don&apos;t have an account?{" "}

@@ -13,7 +13,7 @@ interface AuthContextType {
     user: UserProfile | null;
     isLoading: boolean;
     isAuthenticated: boolean;
-    login: (email: string, password: string) => Promise<void>;
+    login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
     register: (email: string, password: string, displayName?: string) => Promise<void>;
     logout: () => void;
     googleLogin: () => void;
@@ -77,9 +77,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
     }, []);
 
-    const login = async (email: string, password: string): Promise<void> => {
+    const login = async (email: string, password: string, rememberMe: boolean = true): Promise<void> => {
         const response = await authApi.login(email, password);
-        setTokens(response.access_token, response.refresh_token);
+        setTokens(response.access_token, response.refresh_token, rememberMe);
         const profile = await userApi.getProfile();
         setUser(profile);
     };

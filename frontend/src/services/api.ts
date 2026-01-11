@@ -7,21 +7,28 @@ const TOKEN_KEY = 'howl_access_token';
 const REFRESH_TOKEN_KEY = 'howl_refresh_token';
 
 export const getAccessToken = (): string | null => {
-    return localStorage.getItem(TOKEN_KEY);
+    return localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY);
 };
 
 export const getRefreshToken = (): string | null => {
-    return localStorage.getItem(REFRESH_TOKEN_KEY);
+    return localStorage.getItem(REFRESH_TOKEN_KEY) || sessionStorage.getItem(REFRESH_TOKEN_KEY);
 };
 
-export const setTokens = (accessToken: string, refreshToken: string): void => {
-    localStorage.setItem(TOKEN_KEY, accessToken);
-    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+export const setTokens = (accessToken: string, refreshToken: string, remember: boolean = true): void => {
+    if (remember) {
+        localStorage.setItem(TOKEN_KEY, accessToken);
+        localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+    } else {
+        sessionStorage.setItem(TOKEN_KEY, accessToken);
+        sessionStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+    }
 };
 
 export const clearTokens = (): void => {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(REFRESH_TOKEN_KEY);
 };
 
 // API client with automatic token handling
@@ -156,9 +163,7 @@ export const authApi = {
             password,
         }),
 
-    googleLogin: () => {
-        window.location.href = `${API_BASE_URL}/api/auth/google`;
-    },
+
 
     logout: () => {
         clearTokens();
