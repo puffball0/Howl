@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
-import { motion } from "framer-motion";
 import {
-    User, Mail, MapPin, Camera, Briefcase,
-    Globe, Heart, Shield, Save, ChevronRight, Loader2
+    User, MapPin, Camera,
+    Globe, Heart, Save, Loader2, Plus
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useAuth } from "../contexts/AuthContext";
@@ -232,22 +231,55 @@ export default function Profile() {
 
                     {/* Interests */}
                     <div className="bg-[#02121f] border border-white/5 rounded-3xl p-8">
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="text-sm font-black text-howl-orange uppercase tracking-widest flex items-center gap-2">
-                                <Globe size={16} /> Interests
-                            </h3>
-                            <button className="text-xs font-bold text-gray-500 hover:text-white transition-colors">Add More +</button>
-                        </div>
+                        <div className="flex flex-col gap-4">
+                            <div className="flex items-center justify-between mb-2">
+                                <h3 className="text-sm font-black text-howl-orange uppercase tracking-widest flex items-center gap-2">
+                                    <Globe size={16} /> Interests
+                                </h3>
+                            </div>
 
-                        <div className="flex flex-wrap gap-2">
-                            {userData.interests.map(interest => (
-                                <div key={interest} className="px-4 py-2 bg-white/5 border border-white/5 rounded-lg text-xs font-bold text-gray-400 flex items-center gap-2 group">
-                                    {interest}
-                                    <button className="hover:text-howl-orange">
-                                        <Save size={12} className="opacity-0 group-hover:opacity-100 transition-opacity rotate-45" />
-                                    </button>
+                            <div className="flex flex-wrap gap-2">
+                                {userData.interests.map(interest => (
+                                    <div key={interest} className="px-4 py-2 bg-white/5 border border-white/5 rounded-lg text-xs font-bold text-gray-400 flex items-center gap-2 group hover:bg-white/10 transition-colors">
+                                        {interest}
+                                        <button
+                                            onClick={() => setUserData({
+                                                ...userData,
+                                                interests: userData.interests.filter(i => i !== interest)
+                                            })}
+                                            className="hover:text-howl-orange"
+                                        >
+                                            <div className="rotate-45">
+                                                <Plus size={14} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                                            </div>
+                                        </button>
+                                    </div>
+                                ))}
+
+                                {/* Add New Interest Input */}
+                                <div className="relative group">
+                                    <input
+                                        type="text"
+                                        placeholder="Add interest..."
+                                        className="w-32 px-4 py-2 bg-transparent border border-dashed border-white/20 rounded-lg text-xs font-bold text-gray-400 focus:outline-none focus:border-howl-orange focus:text-white transition-all placeholder:text-gray-600"
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter') {
+                                                const val = e.currentTarget.value.trim();
+                                                if (val && !userData.interests.includes(val)) {
+                                                    setUserData({
+                                                        ...userData,
+                                                        interests: [...userData.interests, val]
+                                                    });
+                                                    e.currentTarget.value = "";
+                                                }
+                                            }
+                                        }}
+                                    />
+                                    <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-gray-600">
+                                        <Plus size={12} />
+                                    </div>
                                 </div>
-                            ))}
+                            </div>
                         </div>
                     </div>
 

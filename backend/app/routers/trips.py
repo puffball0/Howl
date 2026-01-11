@@ -63,6 +63,94 @@ async def list_trips(
     return result
 
 
+@router.get("/suggested", response_model=List[TripList])
+async def get_suggested_trips(
+    limit: int = 10,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Get personalized trip suggestions based on user profile, interests, and past behavior.
+    Uses a weighted scoring algorithm to rank trips.
+    """
+    # 1. Get all candidates (future trips, excluding ones user created or joined)
+    # real-world optimization: filter by date > now
+    all_trips = db.query(Trip).all()
+    
+    # Get user's joined trip IDs to exclude
+    joined_trip_ids = [m.trip_id for m in db.query(TripMember).filter(TripMember.user_id == current_user.id).all()]
+    
+    candidates = []
+    
+    # User profile vectors
+    user_interests = set([i.lower() for i in (current_user.interests or [])])
+    user_personality = (current_user.personality or "").lower()
+    user_location = (current_user.location or "").lower()
+    
+    for trip in all_trips:
+        # Skip if already joined or created
+        # Skip if already joined (we still want to skip joined, but maybe show created for now so you can see the sorting?)
+        # Actually, let's keep hiding joined, but show created so you can verify the location sort even if you made the trips.
+        if trip.id in joined_trip_ids: # or trip.creator_id == current_user.id:
+            continue
+            
+        # Critical Data Integrity Check: Skip trips that are missing required fields
+        # This prevents 422 errors if the DB has partial/junk data
+        if not trip.title or not trip.location or trip.max_members is None:
+            continue
+            
+        score = 0
+        
+        # Factor 1: Tag Overlap (High Weight)
+        trip_tags = set([t.lower() for t in (trip.tags or [])])
+        overlap = user_interests.intersection(trip_tags)
+        score += len(overlap) * 10
+        
+        # Factor 2: Vibe/Personality Match (Medium Weight)
+        trip_vibe = (trip.vibe or "").lower()
+        if user_personality and trip_vibe:
+            if user_personality in trip_vibe or trip_vibe in user_personality:
+                score += 15
+        
+        # Factor 3: Location Proximity/Relevance (Low Weight)
+        # Simple string match for now
+        trip_loc = (trip.location or "").lower()
+        if user_location and (user_location in trip_loc or trip_loc in user_location):
+             # Boost local trips significantly as requested
+             score += 30
+             
+        # Factor 4: Popularity (Tie-breaker)
+        member_count = db.query(TripMember).filter(TripMember.trip_id == trip.id).count()
+        score += member_count * 2
+        
+        candidates.append({
+            "trip": trip,
+            "score": score,
+            "member_count": member_count
+        })
+    
+    # Sort by score descending
+    candidates.sort(key=lambda x: x["score"], reverse=True)
+    
+    # Return top N
+    result = []
+    for item in candidates[:limit]:
+        trip = item["trip"]
+        result.append(TripList(
+            id=trip.id,
+            title=trip.title or "Untitled Trip",
+            location=trip.location or "Unknown Location",
+            duration=trip.duration,
+            image_url=trip.image_url,
+            tags=trip.tags or [],
+            member_count=item["member_count"],
+            max_members=trip.max_members or 8,
+            is_member=False
+        ))
+        
+    return result
+
+
 @router.post("/", response_model=TripDetail)
 async def create_trip(
     trip_data: TripCreate,

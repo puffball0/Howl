@@ -215,6 +215,8 @@ export const tripsApi = {
         return api.get<TripListItem[]>(`/api/trips${query ? `?${query}` : ''}`);
     },
 
+    getSuggested: (limit: number = 5) => api.get<TripListItem[]>(`/api/trips/suggested?limit=${limit}`),
+
     getById: (id: string) => api.get<TripDetail>(`/api/trips/${id}`),
 
     create: (data: TripCreate) => api.post<TripDetail>('/api/trips', data),

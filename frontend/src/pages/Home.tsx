@@ -56,8 +56,16 @@ export default function Home() {
     useEffect(() => {
         const loadTrips = async () => {
             try {
-                const data = await tripsApi.list({ limit: 10 });
-                setTrips(data);
+                // Fetch personalized AI suggestions
+                const data = await tripsApi.getSuggested(10);
+
+                // If no suggestions (e.g. new user), fallback to general list
+                if (data.length === 0) {
+                    const backupData = await tripsApi.list({ limit: 10 });
+                    setTrips(backupData);
+                } else {
+                    setTrips(data);
+                }
             } catch (err) {
                 console.log('Using mock data for trips');
                 setTrips(mockTrips as TripListItem[]);
