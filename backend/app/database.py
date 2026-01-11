@@ -5,12 +5,18 @@ from app.config import get_settings
 
 settings = get_settings()
 
+# Fix SQLAlchemy compatibility with some providers (like Render/Neon)
+database_url = settings.database_url
+if database_url and database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
 # Create database engine
 engine = create_engine(
-    settings.database_url,
+    database_url,
     pool_pre_ping=True,
     pool_size=10,
-    max_overflow=20
+    max_overflow=20,
+    pool_recycle=300
 )
 
 # Create session factory
