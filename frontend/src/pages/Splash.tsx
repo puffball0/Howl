@@ -32,6 +32,20 @@ const Splash: React.FC<SplashProps> = ({ onComplete }) => {
                     {/* Background Elements - Subtle Navy Gradient */}
                     <div className="absolute inset-0 bg-gradient-to-b from-howl-navy via-black to-black opacity-80" />
 
+                    {/* Wolf Background Art - Screen Blend Mode to remove black bg */}
+                    <motion.div
+                        className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20 mix-blend-screen"
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 0.2 }}
+                        transition={{ duration: 4, ease: "easeOut" }}
+                    >
+                        <img
+                            src="/images/wolf-splash.png"
+                            alt="Wolf"
+                            className="w-full max-w-xs md:max-w-md object-contain mix-blend-screen"
+                        />
+                    </motion.div>
+
                     {/* Main Logo Text - No Icons */}
                     <motion.h1
                         className="relative text-8xl md:text-9xl font-heading font-black tracking-tighter text-howl-orange z-10"
