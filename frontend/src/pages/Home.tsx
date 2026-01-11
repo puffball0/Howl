@@ -116,6 +116,11 @@ export default function Home() {
                             type="text"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" && searchQuery.trim()) {
+                                    window.location.href = `/explore?search=${encodeURIComponent(searchQuery)}`;
+                                }
+                            }}
                             placeholder="Find your adventure..."
                             className="w-full h-14 pl-12 pr-4 rounded-full bg-white/90 backdrop-blur-md text-howl-navy placeholder-gray-600 font-bold focus:outline-none focus:ring-4 focus:ring-howl-orange/50 shadow-2xl transition-all"
                         />

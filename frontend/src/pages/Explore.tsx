@@ -98,18 +98,34 @@ export default function Explore() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const searchParam = params.get("search");
+        if (searchParam) {
+            setSearchQuery(searchParam);
+        }
+    }, []);
+
+    useEffect(() => {
         const loadTrips = async () => {
+            setIsLoading(true);
             try {
                 const data = await tripsApi.list({ search: searchQuery || undefined });
                 setTrips(data);
             } catch (err) {
                 console.log('Using mock data for trips');
-                setTrips(mockTrips as TripListItem[]);
+                // Only use mock data if no search query, to avoid confusing results
+                if (!searchQuery) {
+                    setTrips(mockTrips as TripListItem[]);
+                } else {
+                    setTrips([]);
+                }
             } finally {
                 setIsLoading(false);
             }
         };
-        loadTrips();
+        // Debounce slightly to avoid rapid API calls if typing
+        const timer = setTimeout(loadTrips, 300);
+        return () => clearTimeout(timer);
     }, [searchQuery]);
 
     // Filter trips based on selection
@@ -141,6 +157,8 @@ export default function Explore() {
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                         <input
                             type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                             placeholder="Search destination..."
                             className="w-full h-12 pl-10 pr-4 bg-white/5 border border-white/10 rounded-xl text-sm font-bold focus:outline-none focus:border-howl-orange focus:ring-1 focus:ring-howl-orange transition-all"
                         />
