@@ -200,18 +200,23 @@ export default function Profile() {
                         </h3>
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {["Chill", "Adventurous", "Spontaneous", "Planned"].map(p => (
+                            {[
+                                { id: "chill", label: "Chill" },
+                                { id: "adventurous", label: "Adventurous" },
+                                { id: "spontaneous", label: "Spontaneous" },
+                                { id: "planned", label: "Planned" }
+                            ].map(p => (
                                 <button
-                                    key={p}
-                                    onClick={() => setUserData({ ...userData, personality: p })}
+                                    key={p.id}
+                                    onClick={() => setUserData({ ...userData, personality: p.id })}
                                     className={cn(
                                         "h-16 rounded-2xl border-2 font-black uppercase tracking-tighter text-xs transition-all",
-                                        userData.personality === p
+                                        userData.personality === p.id
                                             ? "bg-howl-orange border-howl-orange text-white shadow-lg"
                                             : "bg-white/5 border-transparent text-gray-500 hover:bg-white/10"
                                     )}
                                 >
-                                    {p}
+                                    {p.label}
                                 </button>
                             ))}
                         </div>
