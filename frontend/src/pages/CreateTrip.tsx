@@ -242,18 +242,18 @@ export default function CreateTrip() {
                                 <div>
                                     <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Age Range</label>
                                     <select className="w-full h-14 px-6 bg-white/5 border border-white/10 rounded-xl font-bold focus:outline-none focus:border-howl-orange transition-all appearance-none cursor-pointer">
-                                        <option>All Ages</option>
-                                        <option>18-25</option>
-                                        <option>21-35</option>
-                                        <option>30+</option>
+                                        <option style={{ backgroundColor: "#0f172a", color: "white" }}>All Ages</option>
+                                        <option style={{ backgroundColor: "#0f172a", color: "white" }}>18-25</option>
+                                        <option style={{ backgroundColor: "#0f172a", color: "white" }}>21-35</option>
+                                        <option style={{ backgroundColor: "#0f172a", color: "white" }}>30+</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label className="block text-[10px] font-black text-gray-500 uppercase tracking-widest mb-2">Gender</label>
                                     <select className="w-full h-14 px-6 bg-white/5 border border-white/10 rounded-xl font-bold focus:outline-none focus:border-howl-orange transition-all appearance-none cursor-pointer">
-                                        <option>All Genders</option>
-                                        <option>Women Only</option>
-                                        <option>Men Only</option>
+                                        <option style={{ backgroundColor: "#0f172a", color: "white" }}>All Genders</option>
+                                        <option style={{ backgroundColor: "#0f172a", color: "white" }}>Women Only</option>
+                                        <option style={{ backgroundColor: "#0f172a", color: "white" }}>Men Only</option>
                                     </select>
                                 </div>
                             </div>
