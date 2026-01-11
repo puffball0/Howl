@@ -16,7 +16,6 @@ interface AuthContextType {
     login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
     register: (email: string, password: string, displayName?: string) => Promise<void>;
     logout: () => void;
-    googleLogin: () => void;
     completeOnboarding: (data: OnboardingData) => Promise<void>;
     updateProfile: (data: Partial<UserProfile>) => Promise<void>;
     refreshUser: () => Promise<void>;
@@ -96,10 +95,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(null);
     };
 
-    const googleLogin = (): void => {
-        authApi.googleLogin();
-    };
-
     const completeOnboarding = async (data: OnboardingData): Promise<void> => {
         const updatedUser = await userApi.completeOnboarding(data);
         setUser(updatedUser);
@@ -131,7 +126,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         login,
         register,
         logout,
-        googleLogin,
         completeOnboarding,
         updateProfile,
         refreshUser,
