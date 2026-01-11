@@ -124,7 +124,7 @@ async def get_my_trips(
             "title": trip.title,
             "location": trip.location,
             "date": trip.dates or "",
-            "image": trip.image_url or "/images/trip-beach.png",
+            "image_url": trip.image_url or "/images/trip-beach.png",
             "status": trip_status,
             "member_count": member_count
         }
