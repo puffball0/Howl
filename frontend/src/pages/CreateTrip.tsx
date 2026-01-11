@@ -104,17 +104,13 @@ export default function CreateTrip() {
     // Step 1: Search / Initial Intent
     if (step === "search") {
         return (
-            <div className="min-h-full w-full bg-howl-navy flex flex-col items-center justify-center p-6 text-white text-center">
+            <div className="h-[calc(100vh-8rem)] lg:h-full w-full bg-howl-navy flex flex-col items-center justify-center p-6 text-white text-center">
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     className="max-w-xl w-full"
                 >
-                    <div className="mb-8 flex justify-center">
-                        <div className="w-20 h-20 bg-howl-orange rounded-3xl flex items-center justify-center shadow-2xl shadow-howl-orange/20">
-                            <Plus size={40} strokeWidth={3} />
-                        </div>
-                    </div>
+
                     <h1 className="text-4xl font-heading font-black mb-4 tracking-tight">WHERE'S YOUR NEXT ADVENTURE?</h1>
                     <p className="text-gray-400 font-medium mb-12">Before we start your pack, let's see if there's a group already heading your way.</p>
 
@@ -130,7 +126,7 @@ export default function CreateTrip() {
                             />
                         </div>
                         <button
-                            onClick={() => setStep("results")}
+                            onClick={handleSearch}
                             disabled={!searchData.destination}
                             className="w-full h-16 bg-howl-orange hover:bg-howl-burnt disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-2xl font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
                         >
