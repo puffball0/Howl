@@ -8,7 +8,7 @@ import { cn } from "../lib/utils";
 import { useAuth } from "../contexts/AuthContext";
 
 export default function Profile() {
-    const { user, updateProfile, uploadAvatar } = useAuth();
+    const { user, updateProfile, uploadAvatar, isLoading } = useAuth();
     const avatarInputRef = useRef<HTMLInputElement>(null);
     const [isSaving, setIsSaving] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
@@ -69,6 +69,14 @@ export default function Profile() {
             setIsSaving(false);
         }
     };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-full w-full bg-howl-navy flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-howl-orange animate-spin" />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-full w-full bg-howl-navy p-6 lg:p-10 pb-32">
