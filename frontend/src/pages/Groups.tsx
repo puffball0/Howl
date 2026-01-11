@@ -58,7 +58,16 @@ export default function Groups() {
         loadGroups();
     }, []);
 
-    const joinedGroups = groups.length > 0 ? groups : mockGroups;
+    // Show loader while loading
+    if (isLoading) {
+        return (
+            <div className="min-h-full w-full bg-howl-navy flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-howl-orange animate-spin" />
+            </div>
+        );
+    }
+
+    const joinedGroups = groups;
 
     return (
         <div className="min-h-full w-full bg-howl-navy p-6 lg:p-10 pb-32">
@@ -82,63 +91,69 @@ export default function Groups() {
 
                 {/* Groups List */}
                 <div className="space-y-4">
-                    {joinedGroups.map((group, index) => (
-                        <motion.div
-                            key={group.id}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: index * 0.1 }}
-                        >
-                            <Link
-                                to={`/group/${group.id}`}
-                                className="block bg-[#02121f] border border-white/5 p-4 md:p-6 rounded-3xl hover:border-howl-orange/30 transition-all group overflow-hidden relative"
+                    {joinedGroups.length > 0 ? (
+                        joinedGroups.map((group, index) => (
+                            <motion.div
+                                key={group.id}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: index * 0.1 }}
                             >
-                                <div className="flex items-center gap-6">
-                                    {/* Trip Image */}
-                                    <div className="w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-2xl overflow-hidden relative">
-                                        <img src={group.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={group.title} />
-                                        {group.unread > 0 && (
-                                            <div className="absolute top-0 right-0 w-4 h-4 bg-howl-orange border-2 border-[#02121f] rounded-full" />
-                                        )}
-                                    </div>
-
-                                    {/* Info */}
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center justify-between mb-1">
-                                            <h3 className="text-lg md:text-xl font-heading font-black uppercase tracking-tight truncate text-white">
-                                                {group.title}
-                                            </h3>
-                                            <span className="text-[10px] font-black text-gray-500">{group.time}</span>
+                                <Link
+                                    to={`/group/${group.id}`}
+                                    className="block bg-[#02121f] border border-white/5 p-4 md:p-6 rounded-3xl hover:border-howl-orange/30 transition-all group overflow-hidden relative"
+                                >
+                                    <div className="flex items-center gap-6">
+                                        {/* Trip Image */}
+                                        <div className="w-16 h-16 md:w-20 md:h-20 shrink-0 rounded-2xl overflow-hidden relative">
+                                            <img src={group.image || "/images/trip-beach.png"} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt={group.title} />
+                                            {group.unread > 0 && (
+                                                <div className="absolute top-0 right-0 w-4 h-4 bg-howl-orange border-2 border-[#02121f] rounded-full" />
+                                            )}
                                         </div>
 
-                                        <div className="flex items-center gap-4 text-xs font-bold text-gray-500 mb-2">
-                                            <span className="flex items-center gap-1"><MapPin size={12} className="text-howl-orange" /> {group.location}</span>
-                                            <span className="flex items-center gap-1"><Users size={12} /> {group.members}</span>
+                                        {/* Info */}
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <h3 className="text-lg md:text-xl font-heading font-black uppercase tracking-tight truncate text-white">
+                                                    {group.title}
+                                                </h3>
+                                                <span className="text-[10px] font-black text-gray-500">{group.time}</span>
+                                            </div>
+
+                                            <div className="flex items-center gap-4 text-xs font-bold text-gray-500 mb-2">
+                                                <span className="flex items-center gap-1"><MapPin size={12} className="text-howl-orange" /> {group.location}</span>
+                                                <span className="flex items-center gap-1"><Users size={12} /> {group.members}</span>
+                                            </div>
+
+                                            <p className={cn(
+                                                "text-sm truncate",
+                                                group.unread > 0 ? "text-white font-bold" : "text-gray-500"
+                                            )}>
+                                                {group.lastMessage}
+                                            </p>
                                         </div>
 
-                                        <p className={cn(
-                                            "text-sm truncate",
-                                            group.unread > 0 ? "text-white font-bold" : "text-gray-500"
-                                        )}>
-                                            {group.lastMessage}
-                                        </p>
-                                    </div>
-
-                                    <div className="shrink-0 hidden md:block">
-                                        <div className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-gray-500 group-hover:bg-howl-orange group-hover:text-white transition-all">
-                                            <ChevronRight size={20} />
+                                        <div className="shrink-0 hidden md:block">
+                                            <div className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center text-gray-500 group-hover:bg-howl-orange group-hover:text-white transition-all">
+                                                <ChevronRight size={20} />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                {group.unread > 0 && (
-                                    <div className="absolute top-4 right-4 bg-howl-orange text-black text-[10px] font-black px-2 py-0.5 rounded-full md:hidden">
-                                        {group.unread} NEW
-                                    </div>
-                                )}
-                            </Link>
-                        </motion.div>
-                    ))}
+                                    {group.unread > 0 && (
+                                        <div className="absolute top-4 right-4 bg-howl-orange text-black text-[10px] font-black px-2 py-0.5 rounded-full md:hidden">
+                                            {group.unread} NEW
+                                        </div>
+                                    )}
+                                </Link>
+                            </motion.div>
+                        ))
+                    ) : (
+                        <div className="text-center py-10 text-gray-500 font-bold uppercase tracking-widest text-xs">
+                            You haven't joined any packs yet.
+                        </div>
+                    )}
                 </div>
 
                 {/* Empty State / Discovery Call */}
