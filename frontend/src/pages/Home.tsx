@@ -186,9 +186,7 @@ export default function Home() {
                     className="max-w-4xl mx-auto bg-gradient-to-r from-howl-orange to-howl-burnt rounded-3xl p-8 lg:p-12 text-center relative overflow-hidden shadow-2xl shadow-howl-orange/10"
                 >
                     <div className="relative z-10 flex flex-col items-center">
-                        <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-6 shadow-lg text-howl-orange">
-                            <Plus size={32} strokeWidth={3} />
-                        </div>
+
                         <h2 className="text-3xl lg:text-4xl font-heading font-black text-white mb-2 uppercase tracking-tight">
                             Call Your Pack
                         </h2>
