@@ -130,7 +130,7 @@ export default function TripDetails() {
 
                 <button
                     onClick={() => navigate(-1)}
-                    className="absolute top-6 left-6 w-12 h-12 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-howl-orange transition-colors z-30"
+                    className="absolute top-6 left-6 lg:left-20 w-12 h-12 bg-black/50 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-howl-orange transition-colors z-30"
                 >
                     <ChevronLeft size={24} />
                 </button>

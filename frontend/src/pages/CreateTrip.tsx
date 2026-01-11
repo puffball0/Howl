@@ -145,7 +145,7 @@ export default function CreateTrip() {
     // Step 2: Show Similar Trips
     if (step === "results") {
         return (
-            <div className="min-h-full w-full bg-howl-navy p-6 lg:p-12 text-white">
+            <div className="min-h-full w-full bg-howl-navy p-6 lg:p-12 lg:pl-20 text-white">
                 <div className="max-w-4xl mx-auto">
                     <button
                         onClick={() => setStep("search")}

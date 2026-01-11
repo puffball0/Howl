@@ -112,7 +112,7 @@ export default function EditTrip() {
     }
 
     return (
-        <div className="min-h-full w-full bg-howl-navy p-6 lg:p-12 text-white">
+        <div className="min-h-full w-full bg-howl-navy p-6 lg:p-12 lg:pl-20 text-white">
             <div className="max-w-2xl mx-auto">
                 <button
                     onClick={() => navigate(`/trip/${id}`, { replace: true })}

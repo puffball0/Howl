@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
-import { Home, Calendar, Map, User, PlusCircle, ChevronLeft, ChevronRight, Settings, MapPin } from "lucide-react";
+import { Home, Calendar, Map, User, PlusCircle, ChevronLeft, ChevronRight, Settings, MapPin, Menu } from "lucide-react";
 import { cn } from "../lib/utils";
 import { motion } from "framer-motion";
 
@@ -74,7 +74,7 @@ export default function MainLayout() {
                 onClick={() => setSidebarOpen(!isSidebarOpen)}
                 className={`hidden lg:flex absolute top-8 w-8 h-8 bg-howl-orange rounded-full items-center justify-center text-howl-navy shadow-lg z-50 hover:scale-110 transition-all duration-300 ${isSidebarOpen ? "left-[240px]" : "left-6"}`}
             >
-                {isSidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
+                <Menu size={16} />
             </button>
 
             {/* Main Content */}
