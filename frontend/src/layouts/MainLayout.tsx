@@ -63,7 +63,6 @@ export default function MainLayout() {
                     <Link to="/create-trip" className={cn(
                         "w-full h-12 bg-gradient-to-r from-howl-orange to-howl-burnt rounded-xl flex items-center justify-center gap-2 font-black uppercase tracking-tighter shadow-lg shadow-howl-orange/20 hover:scale-[1.02] transition-transform whitespace-nowrap"
                     )}>
-                        <PlusCircle className="w-5 h-5 min-w-[20px]" />
                         <span>Create</span>
                     </Link>
                 </div>

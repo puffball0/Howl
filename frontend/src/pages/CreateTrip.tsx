@@ -111,7 +111,14 @@ export default function CreateTrip() {
                     className="max-w-xl w-full"
                 >
 
-                    <h1 className="text-4xl font-heading font-black mb-4 tracking-tight">WHERE'S YOUR NEXT ADVENTURE?</h1>
+                    <h1 className="text-3xl md:text-5xl font-heading font-black mb-6 tracking-tighter leading-none">
+                        <span className="block text-white">
+                            WHERE'S YOUR NEXT
+                        </span>
+                        <span className="block text-howl-orange">
+                            ADVENTURE?
+                        </span>
+                    </h1>
                     <p className="text-gray-400 font-medium mb-12">Before we start your pack, let's see if there's a group already heading your way.</p>
 
                     <div className="space-y-4">
