@@ -5,7 +5,7 @@ import {
     Calendar as CalendarIcon, Users, Info, Loader2
 } from "lucide-react";
 import { cn } from "../lib/utils";
-import { calendarApi, type CalendarTrip } from "../services/api";
+import { userApi, type CalendarTrip } from "../services/api";
 
 // Fallback mock data for calendar
 const mockTripEvents = [
@@ -30,19 +30,84 @@ const mockTripEvents = [
 ];
 
 export default function Calendar() {
-    const [currentMonth, setCurrentMonth] = useState(8); // September 2026
+    const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
     const [hoveredTrip, setHoveredTrip] = useState<any>(null);
     const [tripEvents, setTripEvents] = useState<CalendarTrip[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ];
+
     useEffect(() => {
         const loadEvents = async () => {
             try {
-                const data = await calendarApi.getTripsByMonth(currentMonth + 1, 2026);
-                setTripEvents(data);
+                // Fetch confirmed trips (upcoming and past)
+                const { upcoming, past } = await userApi.getMyTrips();
+                const allTrips = [...upcoming, ...past];
+
+                console.log("Fetched trips for calendar:", allTrips);
+
+                // Parse trips into calendar events
+                const events: CalendarTrip[] = allTrips.map((trip, index) => {
+                    // Primitive date parsing for "Sept 12" or "September 12 - 15"
+                    // This is robust enough for the demo formats
+                    let month = -1;
+                    let days: number[] = [];
+
+                    if (trip.date) {
+                        const dateStr = trip.date.toLowerCase();
+
+                        // Try to find a month name in the string
+                        month = monthNames.findIndex(m => dateStr.includes(m.toLowerCase()) || dateStr.includes(m.substring(0, 3).toLowerCase()));
+
+                        // Find days - match numbers 1-31
+                        const dayMatches = dateStr.match(/\b([1-9]|[12][0-9]|3[01])\b/g);
+
+                        if (dayMatches && dayMatches.length > 0) {
+                            const nums = dayMatches.map(d => parseInt(d));
+
+                            if (nums.length > 0) {
+                                // Assume first number is start, second is likely end if present
+                                // If format is "2 Feb - 4 Feb", we get [2, 4]
+                                const start = nums[0];
+                                const end = nums.length > 1 ? nums[1] : start;
+
+                                if (end >= start) {
+                                    for (let i = start; i <= end; i++) {
+                                        days.push(i);
+                                    }
+                                } else {
+                                    // Maybe spanning months or just one day found valid
+                                    days.push(start);
+                                }
+                            }
+                        }
+                    }
+
+                    // Assign random colors if not present
+                    const colors = ["bg-howl-orange", "bg-blue-500", "bg-emerald-500", "bg-purple-500"];
+
+                    return {
+                        id: trip.id,
+                        title: trip.title,
+                        location: trip.location,
+                        dates: days,
+                        month: month,
+                        color: colors[index % colors.length],
+                        vibe: trip.tags?.[0] || "Adventure"
+                    };
+                }).filter(e => {
+                    const valid = e.month !== -1 && e.dates.length > 0;
+                    if (!valid) console.log(`Skipping invalid trip for calendar: ${e.title} (Date: ${allTrips.find(t => t.id === e.id)?.date})`);
+                    return valid;
+                });
+
+                console.log("Parsed events:", events);
+                setTripEvents(events);
             } catch (err) {
-                console.log('Using mock data for calendar');
-                setTripEvents(mockTripEvents as CalendarTrip[]);
+                console.error("Failed to load calendar trips", err);
             } finally {
                 setIsLoading(false);
             }
@@ -52,11 +117,6 @@ export default function Calendar() {
 
     const daysInMonth = (month: number) => new Date(2026, month + 1, 0).getDate();
     const firstDayOfMonth = (month: number) => new Date(2026, month, 1).getDay();
-
-    const monthNames = [
-        "January", "February", "March", "April", "May", "June",
-        "July", "August", "September", "October", "November", "December"
-    ];
 
     const generateDays = () => {
         const days = [];

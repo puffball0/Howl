@@ -312,6 +312,7 @@ export interface TripListItem {
     location: string;
     duration?: string;
     image_url?: string;
+    date?: string;
     tags: string[];
     member_count: number;
     max_members: number;
