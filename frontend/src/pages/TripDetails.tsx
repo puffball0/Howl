@@ -76,6 +76,8 @@ export default function TripDetails() {
     const [showRestrictionWarning, setShowRestrictionWarning] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
+    const [joinRequests, setJoinRequests] = useState<any[]>([]);
+
     useEffect(() => {
         const loadTrip = async () => {
             if (!id) return;
@@ -84,6 +86,16 @@ export default function TripDetails() {
                 setTrip(data);
                 if (data.is_member) {
                     setJoinState("joined");
+                }
+
+                // If leader, load requests
+                if (data.is_leader) {
+                    try {
+                        const requests = await tripsApi.getJoinRequests(id);
+                        setJoinRequests(requests);
+                    } catch (e) {
+                        console.error("Failed to load requests", e);
+                    }
                 }
             } catch (err) {
                 console.log('Using mock data for trip');
@@ -118,6 +130,28 @@ export default function TripDetails() {
             } else {
                 setTimeout(() => setJoinState("joined"), 1000);
             }
+        }
+    };
+
+    const handleApprove = async (requestId: string) => {
+        try {
+            await tripsApi.approveRequest(trip.id, requestId);
+            // Remove from list
+            setJoinRequests(prev => prev.filter(r => r.id !== requestId));
+            // Reload trip to update member count/list
+            const updatedTrip = await tripsApi.getById(trip.id);
+            setTrip(updatedTrip);
+        } catch (error) {
+            console.error("Failed to approve", error);
+        }
+    };
+
+    const handleReject = async (requestId: string) => {
+        try {
+            await tripsApi.rejectRequest(trip.id, requestId);
+            setJoinRequests(prev => prev.filter(r => r.id !== requestId));
+        } catch (error) {
+            console.error("Failed to reject", error);
         }
     };
 
@@ -265,6 +299,44 @@ export default function TripDetails() {
                                 </div>
                             ))}
                         </div>
+
+                        {/* LEADER: JOIN REQUESTS */}
+                        {trip.is_leader && joinRequests.length > 0 && (
+                            <div className="mb-8 p-4 bg-white/5 rounded-2xl border border-white/10">
+                                <h4 className="text-sm font-black text-howl-orange uppercase tracking-wider mb-4 flex items-center gap-2">
+                                    <AlertCircle size={16} />
+                                    {joinRequests.length} Pending Requests
+                                </h4>
+                                <div className="space-y-3">
+                                    {joinRequests.map((req) => (
+                                        <div key={req.id} className="bg-black/20 p-3 rounded-xl">
+                                            <div className="flex items-center gap-3 mb-3">
+                                                <img
+                                                    src={req.user_avatar || `https://ui-avatars.com/api/?name=${req.user_name}`}
+                                                    className="w-8 h-8 rounded-full bg-gray-700"
+                                                    alt={req.user_name}
+                                                />
+                                                <span className="text-sm font-bold">{req.user_name}</span>
+                                            </div>
+                                            <div className="grid grid-cols-2 gap-2">
+                                                <button
+                                                    onClick={() => handleReject(req.id)}
+                                                    className="px-3 py-2 text-xs font-bold uppercase bg-red-500/10 text-red-500 hover:bg-red-500/20 rounded-lg transition-colors"
+                                                >
+                                                    Reject
+                                                </button>
+                                                <button
+                                                    onClick={() => handleApprove(req.id)}
+                                                    className="px-3 py-2 text-xs font-bold uppercase bg-green-500/10 text-green-500 hover:bg-green-500/20 rounded-lg transition-colors"
+                                                >
+                                                    Approve
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {/* CTA BUTTON */}
                         <AnimatePresence mode="wait">
