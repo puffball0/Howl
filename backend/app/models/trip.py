@@ -20,7 +20,7 @@ class Trip(Base):
     duration = Column(String(50), nullable=True)
     dates = Column(String(100), nullable=True)
     max_members = Column(Integer, default=8)
-    image_url = Column(String(500), nullable=True)
+    image_url = Column(Text, nullable=True)
     description = Column(Text, nullable=True)
     
     # Restrictions

@@ -12,22 +12,21 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 
 @router.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
-    """Upload a file and get the public URL."""
+    """Upload a file and get the base64 URL (for serverless compatibility)."""
     try:
-        # Generate unique filename
-        file_extension = os.path.splitext(file.filename)[1]
-        filename = f"{uuid.uuid4()}{file_extension}"
-        file_path = os.path.join(UPLOAD_DIR, filename)
+        # Read file content
+        content = await file.read()
+        
+        # Encode to base64
+        import base64
+        encoded_string = base64.b64encode(content).decode("utf-8")
+        
+        # Create data URI
+        # Default to image/jpeg if not detected, but UploadFile usually has content_type
+        content_type = file.content_type or "image/jpeg"
+        data_uri = f"data:{content_type};base64,{encoded_string}"
 
-        # Save file
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-
-        # Return public URL
-        # Assuming static files are mounted at /static
-        # and served from the uploads directory
-        # The frontend can construct the full URL if needed, or we return relative
-        return {"url": f"{settings.backend_url}/static/{filename}"}
+        return {"url": data_uri}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Could not upload file: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Could not process file: {str(e)}")

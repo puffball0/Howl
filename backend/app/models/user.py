@@ -17,7 +17,7 @@ class User(Base):
     
     # Profile
     display_name = Column(String(100), nullable=True)
-    avatar_url = Column(String(500), nullable=True)
+    avatar_url = Column(Text, nullable=True)
     location = Column(String(200), nullable=True)
     bio = Column(Text, nullable=True)
     
