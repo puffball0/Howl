@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -6,6 +6,7 @@ import {
     ChevronLeft, Loader2, AlertCircle, Camera, Trash2
 } from "lucide-react";
 import { tripsApi, commonApi, type TripCreate, type TripDetail } from "../services/api";
+import { resizeImage } from "../services/imageUtils";
 
 export default function EditTrip() {
     const { id } = useParams();
@@ -79,15 +80,23 @@ export default function EditTrip() {
         }
     };
 
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || !e.target.files[0]) return;
 
         const file = e.target.files[0];
         try {
-            const result = await commonApi.uploadImage(file);
-            setFormData({ ...formData, image_url: result.url });
+            // Resize and convert to base64 client-side
+            const base64Image = await resizeImage(file);
+            setFormData({ ...formData, image_url: base64Image });
         } catch (err) {
-            console.error("Upload failed", err);
+            console.error("Image processing failed", err);
+        } finally {
+            // Reset input so the same file can be selected again if needed
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
         }
     };
 
