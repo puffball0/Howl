@@ -1,6 +1,8 @@
 # Howl
 > **Stop wandering alone. Find your pack.**
 
+**[Explore Howl Live](https://howlyourpack.vercel.app)**
+
 Howl is an adventure trip-planning application designed to help travelers find their perfect "pack" and coordinate adventurous journeys.
 
 **Features:**
@@ -11,6 +13,7 @@ Howl is an adventure trip-planning application designed to help travelers find t
 - **Collaborative Planning:** Shared itineraries, interactive calendars, and trip-specific restrictions (age, gender, vibe).
 - **Trip Hub:** Multi-day itineraries, custom restrictions, and a dedicated workspace for each adventure.
 - **Adventure Calendar:** Unified view of upcoming trips to manage schedules and overlaps.
+
 
 ## Running the Project
 ### 1. Database Setup
